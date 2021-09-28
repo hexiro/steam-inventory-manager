@@ -1,19 +1,19 @@
 import requests
 
 
-class SteamInventoryManagerException(Exception):
+class SteamInventoryManagerError(Exception):
     """ Base Exception class for this project. """
 
 
-class RequestException(requests.RequestException):
+class RequestError(requests.RequestException):
     """ Raises when a web request fails to complete. """
 
 
-class ConfigurationError(SteamInventoryManagerException):
+class ConfigurationError(SteamInventoryManagerError):
     """ Raises when the config.yaml file has issues which cannot be ignored. """
 
 
-class LoginError(SteamInventoryManagerException):
+class LoginError(SteamInventoryManagerError):
     """ Raises when the client fails to login to steam. """
 
 
@@ -27,3 +27,7 @@ class TwoFactorCodeInvalid(LoginError):
 
 class CaptchaRequired(LoginError):
     """ Raises when steam is asking the client for a captcha to be able to log in. """
+
+
+class EmailCodeRequired(LoginError):
+    """ Raises when an account has email verification enabled instead of mobile verification. """
