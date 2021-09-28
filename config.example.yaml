@@ -1,0 +1,31 @@
+---
+# RENAME TO "config.yaml"
+# main steam account
+# items will be traded from here
+main-account:
+  username: "MyMainSteamAccount"
+  password: "password"
+  # used to login w/ 2fa (required to trade)
+  shared-secret: "Y7vCfOb5GYOWmf8FljXiUgQnFik="
+  # used to confirm trades
+  identify-shared: "Y7vCfOb5GYOWmf8FljXiUgQnFik="
+  # they look very similar so watch out!
+# alternate steam accounts
+# items will be primarily traded to here
+alternate-accounts:
+  - username: "MyAlternateSteamAccount"
+    password: "password"
+    shared-secret: "Y7vCfOb5GYOWmf8FljXiUgQnFik="
+    # normally, to accept "gift" trades you wouldn't need to confirm them,
+    # but with the options in place sometimes items get traded back when they raise in price.
+    identify-shared: "Y7vCfOb5GYOWmf8FljXiUgQnFik="
+    # prioritizes giving a certain type of items to this account.
+    # all current options listed. Useful for organizing multiple accounts with different items.
+    # (ex. one account for cases and another for graffities)
+    priority: ["cases", "graffities", "stickers", "agents", "keys"]
+options:
+  # minimum price of a skin for it to stay in your inventory
+  min-price: 1.00
+  # always trades graffities and doesn't check price.
+  # (not normally needed unless you don't want grafitis and also don't want a minimum price)
+  disallow-graffities: true
