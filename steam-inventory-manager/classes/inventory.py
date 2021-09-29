@@ -4,11 +4,10 @@ from typing import List
 import requests
 from steam.steamid import SteamID
 
-from ..types import Exterior, Item
+from ..types import Exterior, Item, Type
 
 
-# TODO: maybe an `item` dataclass?
-# TODO: finish implementing logic to calculate items that need to be traded.
+# TODO: set item type to make it easy to determine which account gets what
 
 class Inventory:
 
@@ -29,26 +28,29 @@ class Inventory:
             if not asset:
                 continue
 
+            type_values = [x.value for x in Type]
+            # there may be better ways to parse this.
             raw_exterior = next((x["value"].split("Exterior: ")[-1] for x in item["descriptions"] if x["value"].startswith("Exterior: ")), None)
+            raw_type = next((x["localized_tag_name"] for x in item["tags"] if x["category"] == "Type"), None)
 
             name = item["name"]
-            # there may be better ways to parse this.
-            exterior = Exterior(raw_exterior) if raw_exterior else None
-            is_weapon = "Weapon" in (tag["category"] for tag in item["tags"])
             # right now, only csgo is supported so these are hard coded
             appid = 730
             contextid = "2"
             amount = int(asset["amount"])
             assetid = asset["assetid"]
+            # optionals
+            exterior = Exterior(raw_exterior) if raw_exterior else None
+            type = Type(raw_type) if raw_type and raw_type in type_values else None
 
             items.append(Item(
                 name=name,
-                exterior=exterior,
-                is_weapon=is_weapon,
                 appid=appid,
                 contextid=contextid,
                 amount=amount,
-                assetid=assetid
+                assetid=assetid,
+                exterior=exterior,
+                type=type
             ))
 
         return items
@@ -59,4 +61,4 @@ class Inventory:
 
 
 if __name__ == "__main__":
-    print(Inventory(76561199033382814).inventory)
+    print(Inventory(SteamID(76561199033382814)).inventory)

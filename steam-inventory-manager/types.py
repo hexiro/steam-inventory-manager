@@ -2,8 +2,8 @@ from dataclasses import dataclass
 from enum import Enum
 from functools import cached_property
 
-from .utils import PRICES
 from . import config
+from .utils import PRICES
 
 
 class Exterior(Enum):
@@ -14,11 +14,27 @@ class Exterior(Enum):
     BATTLE_SCARRED = "Battle-Scarred"
 
 
+class Type(Enum):
+    # weapon types
+    KNIFE = "Knife"
+    GLOVES = "Gloves"
+    PISTOL = "Pistol"
+    RIFLE = "Rifle"
+    SNIPER_RIFLE = "Sniper Rifle"
+    SHOTGUN = "Shotgun"
+    SMG = "SMG"
+    MACHINEGUN = "Machinegun"
+    # other
+    GRAFFITI = "Graffiti"
+    STICKER = "Sticker"
+    AGENT = "Agent"
+    CONTAINER = "Container"
+
+
 @dataclass
 class Item:
     # details about the item itself
     name: str
-    is_weapon: bool
     # details about the item regarding to your inventory
     # most of these could be strings or integers, so im going off of what steam requires for their trading api
     appid: int
@@ -27,6 +43,12 @@ class Item:
     assetid: int
     # not required
     exterior: Exterior = None
+    type: Type = None
+
+    @property
+    def is_weapon(self):
+        # do gloves count as a weapon? probably not. but are they a *weapon* skin? yes
+        return Type in {Type.KNIFE, Type.GLOVES, Type.PISTOL, Type.RIFLE, Type.SNIPER_RIFLE, Type.SHOTGUN, Type.SMG, Type.MACHINEGUN}
 
     @property
     def market_name(self):
