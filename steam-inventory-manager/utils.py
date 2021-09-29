@@ -6,6 +6,10 @@ import time
 from hashlib import sha1
 from time import time
 
+import requests
+
+PRICES = requests.get("https://csgobackpack.net/api/GetItemsList/v2/").json()["items_list"]
+
 
 # contains snippets from
 # https://github.com/Gobot1234/steam.py/blob/4af51e42c5357c90bfc476a098b900541ded1a3c/steam/guard.py
@@ -62,5 +66,3 @@ def generate_confirmation_code(identity_secret: str, tag: str) -> str:
     timestamp = int(time())
     buffer = struct.pack(">Q", timestamp) + tag.encode("ascii")
     return base64.b64encode(hmac.new(base64.b64decode(identity_secret), buffer, digestmod=sha1).digest()).decode()
-
-

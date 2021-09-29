@@ -1,14 +1,16 @@
-from typing import Union
 from functools import cached_property
+from typing import Union, List
 
 import requests
 from steam.steamid import SteamID
+
+from ..types import Exterior, Item
+
 
 # TODO: maybe an `item` dataclass?
 # TODO: finish implementing logic to calculate items that need to be traded.
 
 class Inventory:
-    PRICES = requests.get("http://csgobackpack.net/api/GetItemsList/v2/").json()["items_list"]
 
     def __init__(self, steam_id: Union[str, int, SteamID]) -> None:
         self.steam_id = SteamID(steam_id) if not isinstance(steam_id, SteamID) else steam_id
@@ -19,16 +21,36 @@ class Inventory:
         assets: dict = resp["assets"]
         descriptions: dict = resp["descriptions"]
 
-        items = []
+        items: List[Item] = []
 
         for item in descriptions:
             classid = item["classid"]
             asset = next((x for x in assets if x["classid"] == classid), None)
             if not asset:
                 continue
-            item["assetid"] = asset["assetid"]
-            item["instanceid"] = asset["instanceid"]
 
-            items.append(item)
+            name = item["name"]
+            # there may be better ways to parse this.
+            exterior = Exterior(item[:-1]["market_name"].split("(", maxsplit=1)[1])
+            is_weapon = "Weapon" in (tag["category"] for tag in item["tags"])
+            # right now, only csgo is supported so these are hard coded
+            appid = 730
+            contextid = "2"
+            amount = int(asset["amount"])
+            assetid = asset["assetid"]
+
+            items.append(Item(
+                name=name,
+                exterior=exterior,
+                is_weapon=is_weapon,
+                appid=appid,
+                contextid=contextid,
+                amount=amount,
+                assetid=assetid
+            ))
 
         return items
+
+
+if __name__ == "__main__":
+    Inventory(76561199033382814).inventory
