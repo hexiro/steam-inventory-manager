@@ -1,5 +1,5 @@
 from functools import cached_property
-from typing import Union, List
+from typing import List
 
 import requests
 from steam.steamid import SteamID
@@ -12,8 +12,8 @@ from ..types import Exterior, Item
 
 class Inventory:
 
-    def __init__(self, steam_id: Union[str, int, SteamID]) -> None:
-        self.steam_id = SteamID(steam_id) if not isinstance(steam_id, SteamID) else steam_id
+    def __init__(self, steam_id: SteamID) -> None:
+        self.steam_id = steam_id
 
     @cached_property
     def inventory(self) -> List[Item]:
