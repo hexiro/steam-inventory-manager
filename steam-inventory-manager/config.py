@@ -39,6 +39,7 @@ class Options:
     min_price: float
     disallow_graffities: bool
 
+
 config_file = pathlib.Path(__file__).parents[1] / "config.yaml"
 config = yaml.safe_load(config_file.read_text(encoding="utf-8"))
 

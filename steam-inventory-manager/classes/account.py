@@ -107,7 +107,7 @@ class Account:
             self.transfer_cookie("sessionid", self.session_id)
 
             transfer_parameters = attempt["transfer_parameters"]
-            self.__steam_id = SteamID(transfer_parameters["steamid"])
+            self._steam_id = SteamID(transfer_parameters["steamid"])
             return
 
         email_required = attempt.get("emailauth_needed", False)

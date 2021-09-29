@@ -3,6 +3,7 @@ from enum import Enum
 from functools import cached_property
 
 from .utils import PRICES
+from . import config
 
 
 class Exterior(Enum):
@@ -17,7 +18,6 @@ class Exterior(Enum):
 class Item:
     # details about the item itself
     name: str
-    exterior: Exterior
     is_weapon: bool
     # details about the item regarding to your inventory
     # most of these could be strings or integers, so im going off of what steam requires for their trading api
@@ -25,10 +25,12 @@ class Item:
     contextid: str
     amount: int
     assetid: int
+    # not required
+    exterior: Exterior = None
 
     @property
     def market_name(self):
-        return f"{self.name} {self.exterior.value}"
+        return f"{self.name} {self.exterior.value}" if self.exterior else self.name
 
     @property
     def trade_asset(self):
@@ -39,7 +41,7 @@ class Item:
                 "assetid": self.assetid}
 
     @cached_property
-    def price(self):
+    def price(self) -> float:
         if self.market_name not in PRICES:
             return -1
         item = PRICES[self.market_name]
@@ -51,7 +53,9 @@ class Item:
         for key in queue:
             if key in item["prices"]:
                 return item["prices"][key]["median"]
+        return -1
 
     @property
     def should_be_traded(self):
-        return self.price == -1
+        # if the item doesn't have a price, that generally means it's unpopular so for now i'll trade them.
+        return self.price == -1 or self.price < config.options.min_price
