@@ -8,7 +8,7 @@ main-account:
   # used to login w/ 2fa (required to trade)
   shared-secret: "Y7vCfOb5GYOWmf8FljXiUgQnFik="
   # used to confirm trades
-  identify-shared: "Y7vCfOb5GYOWmf8FljXiUgQnFik="
+  identity-secret: "Y7vCfOb5GYOWmf8FljXiUgQnFik="
   # they look very similar so watch out!
 # alternate steam accounts
 # items will be primarily traded to here
@@ -18,7 +18,7 @@ alternate-accounts:
     shared-secret: "Y7vCfOb5GYOWmf8FljXiUgQnFik="
     # normally, to accept "gift" trades you wouldn't need to confirm them,
     # but with the options in place sometimes items get traded back when they raise in price.
-    identify-shared: "Y7vCfOb5GYOWmf8FljXiUgQnFik="
+    identity-secret: "Y7vCfOb5GYOWmf8FljXiUgQnFik="
     # prioritizes giving a certain type of items to this account.
     # all current options listed. Useful for organizing multiple accounts with different items.
     # (ex. one account for cases and another for graffities)
