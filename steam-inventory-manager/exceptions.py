@@ -5,6 +5,10 @@ class SteamInventoryManagerError(Exception):
     """ Base Exception class for this project. """
 
 
+class TradeError(SteamInventoryManagerError):
+    """ Raises When a trade fails to be sent """
+
+
 class RequestError(requests.RequestException):
     """ Raises when a web request fails to complete. """
 

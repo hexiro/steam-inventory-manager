@@ -1,13 +1,14 @@
 import base64
 import datetime
 import json
+from functools import cached_property
 from typing import Optional, Tuple, List, Type
 
 import requests
 import rsa
 from steam.steamid import SteamID
 
-from ..exceptions import RequestError, IncorrectPassword, LoginError, CaptchaRequired, EmailCodeRequired, TwoFactorCodeInvalid
+from ..exceptions import RequestError, IncorrectPassword, LoginError, CaptchaRequired, EmailCodeRequired, TwoFactorCodeInvalid, TradeError
 from ..utils import generate_session_id, do_no_cache, generate_one_time_code
 
 
@@ -79,14 +80,50 @@ class Account:
     def timestamp(self) -> datetime.datetime:
         return self._timestamp
 
-    def transfer_cookie(self, name: str, value: str):
-        """ sets a cookie for the three main steam domains """
-        for domain in ["store.steampowered.com", "help.steampowered.com", "steamcommunity.com"]:
-            self.session.cookies.set(name, value, domain=domain, secure=True)
-
     @property
     def encrypted_password(self):
         return base64.b64encode(rsa.encrypt(self.password.encode("utf8"), self.public_key)).decode("utf8")
+
+    @cached_property
+    def trade_token(self):
+        privacy_page = self.session.get(f"https://steamcommunity.com/profiles/{self.steam_id.as_64}/tradeoffers/privacy").text
+        return privacy_page.split('id="trade_offer_access_url"')[1].split('"')[1].split("&token=")[-1]
+
+    def trade(self, partner: "Account", assets: list) -> str:
+        """ Sends a trade an returns the trade id """
+        tradeoffer = self.session.post("https://steamcommunity.com/tradeoffer/new/send", data={
+            "sessionid": self.session_id,
+            "serverid": 1,
+            "partner": partner.steam_id.as_64,
+            "tradeoffermessage": "",
+            "json_tradeoffer": json.dumps({
+                "newversion": "true",
+                "version": 2,
+                "me": {
+                    "assets": [],
+                    "currency": [],
+                    "ready": "false"
+                },
+                "them": {
+                    "assets": assets,
+                    "currency": [],
+                    "ready": "false"
+                },
+            }),
+            "captcha": "",
+            "trade_offer_create_params": json.dumps({
+                "trade_offer_access_token": partner.trade_token
+            })
+        }, headers={
+            "Referer": "https://steamcommunity.com/tradeoffer/new/"
+        }).json()
+
+        print(tradeoffer)
+
+        if tradeoffer.get("strError"):
+            raise TradeError(tradeoffer["strError"])
+
+        return tradeoffer["tradeofferid"]
 
     def login(self):
         if self.logged_in:
@@ -102,10 +139,10 @@ class Account:
             self._logged_in = True
 
             for cookie in list(self.session.cookies):
-                self.transfer_cookie(cookie.name, cookie.value)
+                self._transfer_cookie(cookie.name, cookie.value)
 
             self._session_id = generate_session_id()
-            self.transfer_cookie("sessionid", self.session_id)
+            self._transfer_cookie("sessionid", self.session_id)
 
             transfer_parameters = attempt["transfer_parameters"]
             self._steam_id = SteamID(transfer_parameters["steamid"])
@@ -165,3 +202,8 @@ class Account:
             raise RequestError(str(e))
         except KeyError:
             raise LoginError("Unable to retrieve RSA keys from steam.")
+
+    def _transfer_cookie(self, name: str, value: str):
+        """ sets a cookie for the three main steam domains """
+        for domain in ["store.steampowered.com", "help.steampowered.com", "steamcommunity.com"]:
+            self.session.cookies.set(name, value, domain=domain, secure=True)
