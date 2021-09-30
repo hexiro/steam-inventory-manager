@@ -3,6 +3,8 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import List
 
+from .types import Type
+
 import yaml
 
 
@@ -17,21 +19,13 @@ class MainAccount:
     identity_secret: str
 
 
-class Priority(Enum):
-    CASES = "cases"
-    GRAFFITIES = "graffities"
-    STICKERS = "stickers"
-    AGENTS = "agents"
-    KEYS = "keys"
-
-
 @dataclass
 class AlternateAccount:
     username: str
     password: str
     shared_secret: str
     identity_secret: str
-    priority: List[Priority] = None
+    priority: List[Type] = None
 
 
 @dataclass
@@ -54,7 +48,7 @@ alternate_accounts = [AlternateAccount(
     password=acc["password"],
     shared_secret=acc["shared-secret"],
     identity_secret=acc["identity-secret"],
-    priority=[Priority(p) for p in acc["priority"]]
+    priority=[Type(p.title()) for p in acc["priority"]] if "priority" in acc else None
 ) for acc in config["alternate-accounts"]]
 
 options = Options(

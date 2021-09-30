@@ -29,6 +29,8 @@ class Type(Enum):
     STICKER = "Sticker"
     AGENT = "Agent"
     CONTAINER = "Container"
+    COLLECTIBLE = "Collectible"
+    PATCH = "Patch"
 
 
 @dataclass
@@ -79,5 +81,5 @@ class Item:
 
     @property
     def should_be_traded(self):
-        # if the item doesn't have a price, that generally means it's unpopular so for now i'll trade them.
-        return self.price == -1 or self.price < config.options.min_price
+        # if the item doesn't have a price, for now i'm not going to trade them.
+        return self.price < config.options.min_price and self.price != -1
