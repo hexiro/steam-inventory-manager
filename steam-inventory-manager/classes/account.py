@@ -1,7 +1,7 @@
 import base64
 import datetime
 import json
-from typing import Optional, Tuple
+from typing import Optional, Tuple, List, Type
 
 import requests
 import rsa
@@ -13,17 +13,18 @@ from ..utils import generate_session_id, do_no_cache, generate_one_time_code
 
 class Account:
 
-    def __init__(self, username: str, password: str, *, shared_secret: str, identify_secret: str):
+    def __init__(self, username: str, password: str, *, shared_secret: str, identity_secret: str, priority: List[Type] = None):
         self._username: str = username
         self._password: str = password
         self._shared_secret: str = shared_secret
-        self._identity_secret: str = identify_secret
+        self._identity_secret: str = identity_secret
         self._logged_in: bool = False
         self._steam_id: Optional[SteamID] = None
         self._session = requests.Session()
         self._session.headers["User-Agent"] = "python steam-inventory-manager/v1.0.0"
         self._session_id = None
         self._public_key, self._timestamp = self._rsa_key()
+        self.priority = priority
 
     def __repr__(self):
         return (f"<{self.__class__.__name__} "

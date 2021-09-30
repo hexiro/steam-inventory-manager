@@ -7,8 +7,6 @@ from steam.steamid import SteamID
 from ..types import Exterior, Item, Type
 
 
-# TODO: set item type to make it easy to determine which account gets what
-
 class Inventory:
 
     def __init__(self, steam_id: SteamID) -> None:
@@ -23,6 +21,10 @@ class Inventory:
         items: List[Item] = []
 
         for item in descriptions:
+            # this means that the item isn't currently tradable.
+            # sometimes the item will never be tradable and other times it will be tradable after 7 days.
+            if item["tradable"] == 0:
+                continue
             classid = item["classid"]
             asset = next((x for x in assets if x["classid"] == classid), None)
             if not asset:

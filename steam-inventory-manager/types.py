@@ -75,8 +75,8 @@ class Item:
         # imo median is better then an average because of extreme
         # undercuts and super high prices skewing the average
         for key in queue:
-            if key in item["prices"]:
-                return item["prices"][key]["median"]
+            if key in item["price"]:
+                return item["price"][key]["median"]
         return -1
 
     @property
