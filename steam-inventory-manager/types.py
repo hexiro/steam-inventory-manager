@@ -50,7 +50,7 @@ class Item:
     @property
     def is_weapon(self):
         # do gloves count as a weapon? probably not. but are they a *weapon* skin? yes
-        return Type in {Type.KNIFE, Type.GLOVES, Type.PISTOL, Type.RIFLE, Type.SNIPER_RIFLE, Type.SHOTGUN, Type.SMG, Type.MACHINEGUN}
+        return self.type in {Type.KNIFE, Type.GLOVES, Type.PISTOL, Type.RIFLE, Type.SNIPER_RIFLE, Type.SHOTGUN, Type.SMG, Type.MACHINEGUN}
 
     @property
     def market_name(self):
