@@ -1,3 +1,4 @@
+from collections import defaultdict
 from pprint import pprint
 from typing import List, Dict
 
@@ -30,12 +31,10 @@ class SteamInventoryManager:
         if not any(self.inventory.items_to_trade):
             return
 
-        trade_offers: Dict[Account, List[Item]] = {}
+        trade_offers: Dict[Account, List[Item]] = defaultdict(list)
 
         for item in self.inventory.items_to_trade:
             acc = self.which_alternate_account(item.type)
-            if acc not in trade_offers:
-                trade_offers[acc] = []
             trade_offers[acc].append(item)
 
         trade_ids: List[str] = []
