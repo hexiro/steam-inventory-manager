@@ -81,5 +81,17 @@ class Item:
 
     @property
     def should_be_traded(self):
+        if config.options.always_trade_graffities and self.type == Type.GRAFFITI:
+            return True
+        if config.options.always_trade_stickers and self.type == Type.STICKER:
+            return True
+        if config.options.always_trade_agents and self.type == Type.AGENT:
+            return True
+        if config.options.always_trade_containers and self.type == Type.CONTAINER:
+            return True
+        if config.options.always_trade_collectibles and self.type == Type.COLLECTIBLE:
+            return True
+        if config.options.always_trade_patches and self.type == Type.PATCH:
+            return True
         # if the item doesn't have a price, for now i'm not going to trade them.
         return self.price < config.options.min_price and self.price != -1

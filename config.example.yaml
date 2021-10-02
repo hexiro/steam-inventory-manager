@@ -26,6 +26,11 @@ alternate-accounts:
 options:
   # minimum price of a skin for it to stay in your inventory
   min-price: 1.00
-  # always trades graffities and doesn't check price.
-  # (not normally needed unless you don't want grafitis and also don't want a minimum price)
-  disallow-graffities: true
+  # always trades certain types regardless of price
+  # (not normally needed unless you want to trade certain items without setting a min price)
+  always-trade-graffities: true
+  always-trade-stickers: true
+  always-trade-agents: true
+  always-trade-containers: true
+  always-trade-collectibles: true
+  always-trade-patches: true

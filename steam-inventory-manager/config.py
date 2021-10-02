@@ -13,7 +13,12 @@ from .types import Type
 @dataclass
 class Options:
     min_price: float
-    disallow_graffities: bool
+    always_trade_graffities: bool = False
+    always_trade_stickers: bool = False
+    always_trade_agents: bool = False
+    always_trade_containers: bool = False
+    always_trade_collectibles: bool = False
+    always_trade_patches: bool = False
 
 
 config_file = pathlib.Path(__file__).parents[1] / "config.yaml"
@@ -35,5 +40,10 @@ alternate_accounts = [Account(
 
 options = Options(
     min_price=config["options"]["min-price"],
-    disallow_graffities=config["options"]["disallow-graffities"],
+    always_trade_graffities=config["options"].get("always-trade-graffities", False),
+    always_trade_stickers=config["options"].get("always-trade-stickers", False),
+    always_trade_agents=config["options"].get("always-trade-agents", False),
+    always_trade_containers=config["options"].get("always-trade-containers", False),
+    always_trade_collectibles=config["options"].get("always-trade-collectibles", False),
+    always_trade_patches=config["options"].get("always-trade-patches", False),
 )

@@ -46,7 +46,7 @@ class SteamInventoryManager:
                 assets=[x.trade_asset for x in items],
             )
             trade_ids.append(trade_id)
-        
+
         pprint(trade_offers)
 
 
