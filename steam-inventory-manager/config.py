@@ -1,25 +1,9 @@
 import pathlib
-from dataclasses import dataclass
 
 import yaml
 
 from .classes import Account
-from .types import Type
-
-
-# for now im leaving these here instead of in "types.py"
-# i might change my mind
-
-@dataclass
-class Options:
-    min_price: float
-    always_trade_graffities: bool = False
-    always_trade_stickers: bool = False
-    always_trade_agents: bool = False
-    always_trade_containers: bool = False
-    always_trade_collectibles: bool = False
-    always_trade_patches: bool = False
-
+from .types import Type, Options
 
 config_file = pathlib.Path(__file__).parents[1] / "config.yaml"
 config = yaml.safe_load(config_file.read_text(encoding="utf-8"))

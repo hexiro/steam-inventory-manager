@@ -6,6 +6,20 @@ from . import config
 from .utils import PRICES
 
 
+# for config.py
+@dataclass
+class Options:
+    min_price: float
+    always_trade_graffities: bool = False
+    always_trade_stickers: bool = False
+    always_trade_agents: bool = False
+    always_trade_containers: bool = False
+    always_trade_collectibles: bool = False
+    always_trade_patches: bool = False
+
+
+# for steam stuff
+
 class Exterior(Enum):
     FACTORY_NEW = "Factory New"
     MINIMAL_WEAR = "Minimal Wear"
