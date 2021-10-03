@@ -37,16 +37,20 @@ class SteamInventoryManager:
             acc = self.which_alternate_account(item.type)
             trade_offers[acc].append(item)
 
-        trade_ids: List[str] = []
+        pprint(trade_offers)
 
         for acc, items in trade_offers.items():
             trade_id = self.main_account.trade(
                 partner=acc,
                 assets=[x.trade_asset for x in items],
             )
-            trade_ids.append(trade_id)
+            acc.accept_trade(
+                partner=self.main_account,
+                trade_id=trade_id,
+            )
 
-        pprint(trade_offers)
+
+
 
 
 if __name__ == "__main__":

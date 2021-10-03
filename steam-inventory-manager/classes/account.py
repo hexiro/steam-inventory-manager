@@ -94,7 +94,7 @@ class Account:
         privacy_page = self.session.get(f"https://steamcommunity.com/profiles/{self.steam_id.as_64}/tradeoffers/privacy").text
         return privacy_page.split('id="trade_offer_access_url"')[1].split('"')[1].split("&token=")[-1]
 
-    def trade(self, partner: "Account", assets: list) -> str:
+    def trade(self, partner: "Account", assets: list) -> int:
         """ Sends a trade an returns the trade id """
         payload = {
             "sessionid": self.session_id,
@@ -128,7 +128,7 @@ class Account:
         if tradeoffer.get("strError"):
             raise TradeError(tradeoffer["strError"])
 
-        return tradeoffer["tradeofferid"]
+        return int(tradeoffer["tradeofferid"])
 
     def accept_trade(self, partner: "Account", trade_id: int):
         payload = {
