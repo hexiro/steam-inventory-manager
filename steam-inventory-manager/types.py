@@ -20,6 +20,14 @@ class Options:
 
 # for steam stuff
 
+@dataclass
+class Confirmation:
+    id: str
+    data_conf_id: int
+    data_key: str
+    trade_id: int  # this isn't really always the trade ID, but for our purposes this is fine
+
+
 class Exterior(Enum):
     FACTORY_NEW = "Factory New"
     MINIMAL_WEAR = "Minimal Wear"

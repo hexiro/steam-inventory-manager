@@ -17,7 +17,11 @@ class ConfigurationError(SteamInventoryManagerError):
     """ Raises when the config.yaml file has issues which cannot be ignored. """
 
 
-class LoginError(SteamInventoryManagerError):
+class CredentialsError(SteamInventoryManagerError):
+    """ Raises when invalid credentials are provided """
+
+
+class LoginError(CredentialsError):
     """ Raises when the client fails to login to steam. """
 
 

@@ -60,9 +60,9 @@ def generate_device_id(user_id64: int) -> str:
 # print(generate_device_id(76561199033382814))
 
 
-def generate_confirmation_code(identity_secret: str, tag: str) -> str:
+def generate_confirmation_code(identity_secret: str, tag: str, timestamp: int = None) -> str:
     """Generate a trade confirmation code.
     """
-    timestamp = int(time())
+    timestamp = timestamp or int(time())
     buffer = struct.pack(">Q", timestamp) + tag.encode("ascii")
     return base64.b64encode(hmac.new(base64.b64decode(identity_secret), buffer, digestmod=sha1).digest()).decode()
