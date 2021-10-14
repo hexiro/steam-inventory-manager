@@ -2,20 +2,19 @@ from functools import cached_property
 from typing import List
 
 import requests
-from steam.steamid import SteamID
 
 from ..types import Exterior, Item, Type
 
 
 class Inventory:
 
-    def __init__(self, steam_id: SteamID) -> None:
-        self.steam_id = steam_id
+    def __init__(self, steam_id64: int) -> None:
+        self.steam_id64: int = steam_id64
 
     @cached_property
     def items(self) -> List[Item]:
         resp = requests.get(
-            f"https://steamcommunity.com/inventory/{self.steam_id.as_64}/730/2?l=english&count=5000").json()
+            f"https://steamcommunity.com/inventory/{self.steam_id64}/730/2?l=english&count=5000").json()
         assets: dict = resp["assets"]
         descriptions: dict = resp["descriptions"]
 

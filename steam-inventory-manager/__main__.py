@@ -18,7 +18,7 @@ class SteamInventoryManager:
             acc.login()
             print(acc.trade_token)
 
-        self.inventory: Inventory = Inventory(self.main_account.steam_id)
+        self.inventory: Inventory = Inventory(self.main_account.steam_id64)
 
     def which_alternate_account(self, type: Type):
         """Finds which account the item should be traded to based on its type. Defaults to the first account in the list"""
@@ -41,6 +41,10 @@ class SteamInventoryManager:
         pprint(trade_offers)
 
         for acc, items in trade_offers.items():
+
+            # TODO: add THEM / ME fields to make it so main account can send trades
+            # so 2nd account doesn't need an identity secret.
+
             trade_id = acc.trade(
                 partner=self.main_account,
                 assets=items,
@@ -53,3 +57,11 @@ class SteamInventoryManager:
 
 if __name__ == "__main__":
     SteamInventoryManager().main()
+    # inv = Inventory(SteamID(76561199033382814))
+    #
+    # for item in inv.items:
+    #     print(item.should_be_traded, repr(item))
+
+    # total_items = len(inv.items)
+    # should_be_traded = len([i for i in inv.items if i.should_be_traded])
+    # print(f"{should_be_traded}/{total_items}")

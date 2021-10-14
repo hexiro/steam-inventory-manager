@@ -8,7 +8,6 @@ from typing import Optional, Tuple, List, Type, Any, Dict
 import requests
 import rsa
 from bs4 import BeautifulSoup
-from steam.steamid import SteamID
 
 from ..exceptions import RequestError, IncorrectPassword, LoginError, CaptchaRequired, EmailCodeRequired, \
     TwoFactorCodeInvalid, TradeError, CredentialsError
@@ -26,7 +25,7 @@ class Account:
         self._shared_secret: str = shared_secret
         self._identity_secret: str = identity_secret
         self._logged_in: bool = False
-        self._steam_id: Optional[SteamID] = None
+        self._steam_id64: Optional[int] = None
         self._session = requests.Session()
         self._session.headers["User-Agent"] = "python steam-inventory-manager/v1.0.0"
         self._session_id = None
@@ -68,8 +67,8 @@ class Account:
         return self._logged_in
 
     @property
-    def steam_id(self) -> SteamID:
-        return self._steam_id
+    def steam_id64(self) -> int:
+        return self._steam_id64
 
     @property
     def session(self):
@@ -94,7 +93,7 @@ class Account:
     @cached_property
     def trade_token(self):
         privacy_page = self.session.get(
-            f"https://steamcommunity.com/profiles/{self.steam_id.as_64}/tradeoffers/privacy").text
+            f"https://steamcommunity.com/profiles/{self.steam_id64}/tradeoffers/privacy").text
         return privacy_page.split('id="trade_offer_access_url"')[1].split('"')[1].split("&token=")[-1]
 
     def trade(self, partner: "Account", assets: list) -> int:
@@ -102,7 +101,7 @@ class Account:
         payload = {
             "sessionid": self.session_id,
             "serverid": 1,
-            "partner": partner.steam_id.as_64,
+            "partner": partner.steam_id64,
             "tradeoffermessage": "",
             "json_tradeoffer": json.dumps({
                 "newversion": "true",
@@ -139,7 +138,7 @@ class Account:
             "sessionid": self.session_id,
             "tradeofferid": trade_id,
             "serverid": 1,
-            "partner": partner.steam_id.as_64,
+            "partner": partner.steam_id64,
             "captcha": "",
         }
         headers = {"Referer": f"https://steamcommunity.com/tradeoffer/{trade_id}"}
@@ -150,10 +149,10 @@ class Account:
             self._fetch_confirmations()
             confirmation = self._confirmations.get(trade_id)
             timestamp = int(time())
-            device_id = generate_device_id(self.steam_id.as_64)
+            device_id = generate_device_id(self.steam_id64)
             params = {
                 "p": device_id,
-                "a": self.steam_id.as_64,
+                "a": self.steam_id64,
                 "k": generate_confirmation_code(self.identity_secret, "allow", timestamp),
                 "t": timestamp,
                 "m": "android",
@@ -189,7 +188,7 @@ class Account:
             self._transfer_cookie("sessionid", self.session_id)
 
             transfer_parameters = attempt["transfer_parameters"]
-            self._steam_id = SteamID(transfer_parameters["steamid"])
+            self._steam_id64 = transfer_parameters["steamid"]
             return
 
         email_required = attempt.get("emailauth_needed", False)
@@ -255,8 +254,8 @@ class Account:
     def _create_confirmation_params(self, tag: str) -> Dict[str, Any]:
         timestamp = int(time())
         return {
-            "p": generate_device_id(self.steam_id.as_64),
-            "a": self.steam_id.as_64,
+            "p": generate_device_id(self.steam_id64),
+            "a": self.steam_id64,
             "k": generate_confirmation_code(self.identity_secret, tag, timestamp),
             "t": timestamp,
             "m": "android",
