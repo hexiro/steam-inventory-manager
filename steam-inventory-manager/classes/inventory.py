@@ -13,7 +13,7 @@ class Inventory:
         self.steam_id = steam_id
 
     @cached_property
-    def inventory(self) -> List[Item]:
+    def items(self) -> List[Item]:
         resp = requests.get(f"https://steamcommunity.com/inventory/{self.steam_id.as_64}/730/2?l=english&count=5000").json()
         assets: dict = resp["assets"]
         descriptions: dict = resp["descriptions"]
@@ -59,8 +59,9 @@ class Inventory:
 
     @property
     def items_to_trade(self):
-        return [item for item in self.inventory if item.should_be_traded]
+        return [item for item in self.items if item.should_be_traded]
 
 
 if __name__ == "__main__":
-    print(Inventory(SteamID(76561199033382814)).inventory)
+    inv = Inventory(SteamID(76561199033382814))
+    pprint(inv.items)

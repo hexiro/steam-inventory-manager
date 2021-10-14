@@ -10,14 +10,17 @@ import rsa
 from bs4 import BeautifulSoup
 from steam.steamid import SteamID
 
-from ..exceptions import RequestError, IncorrectPassword, LoginError, CaptchaRequired, EmailCodeRequired, TwoFactorCodeInvalid, TradeError, CredentialsError
+from ..exceptions import RequestError, IncorrectPassword, LoginError, CaptchaRequired, EmailCodeRequired, \
+    TwoFactorCodeInvalid, TradeError, CredentialsError
 from ..types import Confirmation
-from ..utils import generate_session_id, do_no_cache, generate_one_time_code, generate_device_id, generate_confirmation_code
+from ..utils import generate_session_id, do_no_cache, generate_one_time_code, generate_device_id, \
+    generate_confirmation_code
 
 
 class Account:
 
-    def __init__(self, username: str, password: str, *, shared_secret: str, identity_secret: str, priority: List[Type] = None):
+    def __init__(self, username: str, password: str, *, shared_secret: str, identity_secret: str,
+                 priority: List[Type] = None):
         self._username: str = username
         self._password: str = password
         self._shared_secret: str = shared_secret
@@ -29,7 +32,6 @@ class Account:
         self._session_id = None
         self._public_key, self._timestamp = self._rsa_key()
         self.priority = priority
-        self._device_id = generate_device_id(self.steam_id.as_64)
         self._confirmations: dict = {}
 
     def __repr__(self):
@@ -91,7 +93,8 @@ class Account:
 
     @cached_property
     def trade_token(self):
-        privacy_page = self.session.get(f"https://steamcommunity.com/profiles/{self.steam_id.as_64}/tradeoffers/privacy").text
+        privacy_page = self.session.get(
+            f"https://steamcommunity.com/profiles/{self.steam_id.as_64}/tradeoffers/privacy").text
         return privacy_page.split('id="trade_offer_access_url"')[1].split('"')[1].split("&token=")[-1]
 
     def trade(self, partner: "Account", assets: list) -> int:
@@ -121,8 +124,9 @@ class Account:
             })
         }
         headers = {"Referer": "https://steamcommunity.com/tradeoffer/new/"}
-        tradeoffer = self.session.post("https://steamcommunity.com/tradeoffer/new/send", data=payload, headers=headers).json()
-
+        tradeoffer = self.session.post("https://steamcommunity.com/tradeoffer/new/send", data=payload,
+                                       headers=headers).json()
+        print(f"{payload=}")
         print(f"{tradeoffer=}")
 
         if tradeoffer.get("strError"):
@@ -139,7 +143,8 @@ class Account:
             "captcha": "",
         }
         headers = {"Referer": f"https://steamcommunity.com/tradeoffer/{trade_id}"}
-        resp = self.session.post(f"https://steamcommunity.com/tradeoffer/{trade_id}/accept", data=payload, headers=headers).json()
+        resp = self.session.post(f"https://steamcommunity.com/tradeoffer/{trade_id}/accept", data=payload,
+                                 headers=headers).json()
 
         if resp.get("needs_mobile_confirmation", False):
             self._fetch_confirmations()
@@ -250,7 +255,7 @@ class Account:
     def _create_confirmation_params(self, tag: str) -> Dict[str, Any]:
         timestamp = int(time())
         return {
-            "p": self._device_id,
+            "p": generate_device_id(self.steam_id.as_64),
             "a": self.steam_id.as_64,
             "k": generate_confirmation_code(self.identity_secret, tag, timestamp),
             "t": timestamp,
