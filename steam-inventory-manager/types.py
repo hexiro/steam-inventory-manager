@@ -76,7 +76,7 @@ class Item:
 
     @property
     def market_name(self):
-        return f"{self.name} {self.exterior.value}" if self.exterior else self.name
+        return f"{self.name} ({self.exterior.value})" if self.exterior else self.name
 
     @property
     def trade_asset(self):
