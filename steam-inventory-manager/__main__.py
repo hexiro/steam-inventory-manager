@@ -18,7 +18,10 @@ class SteamInventoryManager:
         self.inventory: Inventory = Inventory(self.main_account.steam_id64)
 
     def which_alternate_account(self, type: Type):
-        """Finds which account the item should be traded to based on its type. Defaults to the first account in the list"""
+        """
+        Finds which account the item should be traded to based on its type.
+        Defaults to the first account in the list
+        """
         for acc in self.alternate_accounts:
             if acc.priority and type in acc.priority:
                 return acc
@@ -33,8 +36,6 @@ class SteamInventoryManager:
         for item in self.inventory.items_to_trade:
             acc = self.which_alternate_account(item.type)
             trade_offers[acc].append(item.trade_asset)
-
-        trade_offers = dict(trade_offers)
 
         for acc, items in trade_offers.items():
             trade_id = self.main_account.trade(

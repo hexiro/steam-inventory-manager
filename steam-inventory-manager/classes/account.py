@@ -9,6 +9,7 @@ import requests
 import rsa
 from bs4 import BeautifulSoup
 
+from .. import cache
 from ..exceptions import RequestError, IncorrectPassword, LoginError, CaptchaRequired, EmailCodeRequired, \
     TwoFactorCodeInvalid, TradeError, CredentialsError
 from ..types import Confirmation
@@ -125,8 +126,6 @@ class Account:
         headers = {"Referer": "https://steamcommunity.com/tradeoffer/new/"}
         tradeoffer = self.session.post("https://steamcommunity.com/tradeoffer/new/send",
                                        data=payload, headers=headers).json()
-        print(f"{payload=}")
-        print(f"{tradeoffer=}")
 
         if tradeoffer.get("strError"):
             raise TradeError(tradeoffer["strError"])
@@ -169,12 +168,14 @@ class Account:
             }
             resp = self.session.get("https://steamcommunity.com/mobileconf/ajaxop", params=params).json()
 
-            print(f"{resp=}")
-
             if not resp.get("success", False):
                 raise TradeError("Failed to accept trade.")
 
     def login(self):
+        if self.logged_in:
+            return self.session
+
+        self._restore_session()
         if self.logged_in:
             return self.session
 
@@ -195,6 +196,7 @@ class Account:
 
             transfer_parameters = attempt["transfer_parameters"]
             self._steam_id64 = transfer_parameters["steamid"]
+            self._log_session()
             return
 
         email_required = attempt.get("emailauth_needed", False)
@@ -280,7 +282,6 @@ class Account:
 
         soup = BeautifulSoup(resp, "html.parser")
         if soup.select("#mobileconf_empty"):
-            print(f"0 {self._confirmations=}")
             return self._confirmations
         for confirmation in soup.select("#mobileconf_list .mobileconf_list_entry"):
             data_conf_id = confirmation["data-confid"]
@@ -288,5 +289,33 @@ class Account:
             trade_id = int(confirmation.get("data-creator", 0))
             confirmation_id = confirmation["id"].split("conf")[1]
             self._confirmations[trade_id] = Confirmation(confirmation_id, data_conf_id, key, trade_id)
-        print(f"1+ {self._confirmations=}")
         return self._confirmations
+
+    def _is_logged_in(self) -> bool:
+        resp = self.session.get("https://steamcommunity.com/my/profile")
+        # redirects to profile if logged in else brings you to login page
+        return "login/home" not in resp.url
+
+    def _restore_session(self):
+        account_data = cache.account_data(self.username)
+        if not account_data:
+            return
+        session_id = account_data.get("session_id")
+        steam_id64 = account_data.get("steam_id64")
+        steam_login_secure = account_data.get("steam_login_secure")
+        if session_id:
+            self._session_id = session_id
+            self._transfer_cookie("sessionid", self.session_id)
+        if steam_id64:
+            self._steam_id64 = steam_id64
+        if steam_login_secure:
+            self._transfer_cookie(name="steamLoginSecure", value=steam_login_secure)
+        if self._is_logged_in():
+            self._logged_in = True
+
+    def _log_session(self):
+        steam_login_secure = self.session.cookies.get(name="steamLoginSecure", domain="steamcommunity.com")
+        # this should always be set, but just in case, we don't want to set bad data in the json file.
+        if steam_login_secure and self.session_id and self.steam_id64:
+            cache.store_account_data(self.username, session_id=self.session_id, steam_id64=self.steam_id64,
+                                     steam_login_secure=steam_login_secure)
