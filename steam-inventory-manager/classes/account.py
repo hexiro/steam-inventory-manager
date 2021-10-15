@@ -19,12 +19,12 @@ from ..utils import generate_session_id, do_no_cache, generate_one_time_code, ge
 
 class Account:
 
-    def __init__(self, username: str, password: str, *, shared_secret: str, identity_secret: str,
+    def __init__(self, username: str, password: str, *, shared_secret: str, identity_secret: str = None,
                  priority: List[Type] = None):
         self._username: str = username
         self._password: str = password
         self._shared_secret: str = shared_secret
-        self._identity_secret: str = identity_secret
+        self._identity_secret: Optional[str] = identity_secret
         self._logged_in: bool = False
         self._steam_id64: Optional[int] = None
         self._session = requests.Session()
