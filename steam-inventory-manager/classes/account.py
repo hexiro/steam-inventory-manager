@@ -96,7 +96,7 @@ class Account:
             f"https://steamcommunity.com/profiles/{self.steam_id64}/tradeoffers/privacy").text
         return privacy_page.split('id="trade_offer_access_url"')[1].split('"')[1].split("&token=")[-1]
 
-    def trade(self, partner: "Account", assets: list) -> int:
+    def trade(self, partner: "Account", me: list = None, them: list = None) -> int:
         """ Sends a trade an returns the trade id """
         payload = {
             "sessionid": self.session_id,
@@ -107,12 +107,12 @@ class Account:
                 "newversion": "true",
                 "version": 2,
                 "me": {
-                    "assets": [],
+                    "assets": me or [],
                     "currency": [],
                     "ready": "false"
                 },
                 "them": {
-                    "assets": assets,
+                    "assets": them or [],
                     "currency": [],
                     "ready": "false"
                 },
@@ -123,15 +123,17 @@ class Account:
             })
         }
         headers = {"Referer": "https://steamcommunity.com/tradeoffer/new/"}
-        tradeoffer = self.session.post("https://steamcommunity.com/tradeoffer/new/send", data=payload,
-                                       headers=headers).json()
+        tradeoffer = self.session.post("https://steamcommunity.com/tradeoffer/new/send",
+                                       data=payload, headers=headers).json()
         print(f"{payload=}")
         print(f"{tradeoffer=}")
 
         if tradeoffer.get("strError"):
             raise TradeError(tradeoffer["strError"])
 
-        return int(tradeoffer["tradeofferid"])
+        trade_id = int(tradeoffer["tradeofferid"])
+        self._confirm_trade(trade_id, tradeoffer)
+        return trade_id
 
     def accept_trade(self, partner: "Account", trade_id: int):
         payload = {
@@ -144,8 +146,12 @@ class Account:
         headers = {"Referer": f"https://steamcommunity.com/tradeoffer/{trade_id}"}
         resp = self.session.post(f"https://steamcommunity.com/tradeoffer/{trade_id}/accept", data=payload,
                                  headers=headers).json()
+        # confirmation shouldn't be needed as `needs_mobile_confirmation` will be False
+        # if no items are present of this account's side
+        self._confirm_trade(trade_id, resp)
 
-        if resp.get("needs_mobile_confirmation", False):
+    def _confirm_trade(self, trade_id: int, tradeoffer_resp: dict):
+        if tradeoffer_resp.get("needs_mobile_confirmation", False):
             self._fetch_confirmations()
             confirmation = self._confirmations.get(trade_id)
             timestamp = int(time())
@@ -265,7 +271,7 @@ class Account:
     def _fetch_confirmations(self):
         params = self._create_confirmation_params("conf")
         headers = {"X-Requested-With": "com.valvesoftware.android.steam.community"}
-        resp = self.session.get("https://steamcommunity.com/mobileconf/conf", params=params, headers=headers)
+        resp = self.session.get("https://steamcommunity.com/mobileconf/conf", params=params, headers=headers).text
 
         if "incorrect Steam Guard codes." in resp:
             raise CredentialsError("identity_secret is incorrect")
@@ -274,6 +280,7 @@ class Account:
 
         soup = BeautifulSoup(resp, "html.parser")
         if soup.select("#mobileconf_empty"):
+            print(f"0 {self._confirmations=}")
             return self._confirmations
         for confirmation in soup.select("#mobileconf_list .mobileconf_list_entry"):
             data_conf_id = confirmation["data-confid"]
@@ -281,5 +288,5 @@ class Account:
             trade_id = int(confirmation.get("data-creator", 0))
             confirmation_id = confirmation["id"].split("conf")[1]
             self._confirmations[trade_id] = Confirmation(confirmation_id, data_conf_id, key, trade_id)
-
+        print(f"1+ {self._confirmations=}")
         return self._confirmations

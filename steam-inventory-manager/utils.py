@@ -46,7 +46,6 @@ def generate_device_id(user_id64: int) -> str:
     (it works, however it's different that one generated from mobile app)
     """
     hexed_steam_id = sha1(str(int(user_id64)).encode("ascii")).hexdigest()
-    print(hexed_steam_id)
     partial_id = (
         hexed_steam_id[:8],
         hexed_steam_id[8:12],
@@ -55,9 +54,6 @@ def generate_device_id(user_id64: int) -> str:
         hexed_steam_id[20:32],
     )
     return f'android:{"-".join(partial_id)}'
-
-
-# print(generate_device_id(76561199033382814))
 
 
 def generate_confirmation_code(identity_secret: str, tag: str, timestamp: int = None) -> str:
