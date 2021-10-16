@@ -7,6 +7,11 @@ If you ever want to see more popular games supported, please refer me to where I
 
 ***(NOTE: this requires a shared_secret for each account and an identity secret for the main account)***
 
+## Installation & Setup
+1. clone with `git clone https://github.com/Hexiro/steam-inventory-manager`
+2. rename `config.example.yaml` to `config.yaml` and setup (use comments for reference)
+3. start script with `python -m steam-inventory-manager`
+
 ## FAQ
 
 ***Q: Why not just use Storage Units?***<br/>
