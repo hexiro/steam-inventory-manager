@@ -28,22 +28,25 @@ def cached_file(account_name: str) -> Optional[pathlib.Path]:
         return
 
     folder = appdata_equivalent / "steam-inventory-manager"
-    folder.mkdir(exist_ok=True)
+    try:
+        folder.mkdir(exist_ok=True)
+    except (FileNotFoundError, OSError):
+        return
 
     return folder / (account_name + ".json")
 
 
-def account_data(account_name: str) -> dict:
+def session_data(account_name: str) -> dict:
     file = cached_file(account_name)
     if not file or not file.exists():
         return {}
     try:
-        return json.loads(file.read_text(encoding="utf-8"))
+        return json.loads(file.read_text(encoding="utf-8", errors="ignore"))
     except (json.JSONDecodeError, FileNotFoundError):
         return {}
 
 
-def store_account_data(account_name: str, **kwargs):
+def store_session_data(account_name: str, **kwargs):
     file = cached_file(account_name)
     if file:
-        file.write_text(json.dumps(kwargs), encoding="utf-8")
+        file.write_text(json.dumps(kwargs), encoding="utf-8", errors="ignore")

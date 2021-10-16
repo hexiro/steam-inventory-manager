@@ -297,7 +297,7 @@ class Account:
         return "login/home" not in resp.url
 
     def _restore_session(self):
-        account_data = cache.account_data(self.username)
+        account_data = cache.session_data(self.username)
         if not account_data:
             return
         session_id = account_data.get("session_id")
@@ -317,5 +317,5 @@ class Account:
         steam_login_secure = self.session.cookies.get(name="steamLoginSecure", domain="steamcommunity.com")
         # this should always be set, but just in case, we don't want to set bad data in the json file.
         if steam_login_secure and self.session_id and self.steam_id64:
-            cache.store_account_data(self.username, session_id=self.session_id, steam_id64=self.steam_id64,
+            cache.store_session_data(self.username, session_id=self.session_id, steam_id64=self.steam_id64,
                                      steam_login_secure=steam_login_secure)
