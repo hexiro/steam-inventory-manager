@@ -58,6 +58,6 @@ class Inventory:
 
         return items
 
-    @property
+    @cached_property
     def items_to_trade(self):
         return [item for item in self.items if item.should_be_traded]

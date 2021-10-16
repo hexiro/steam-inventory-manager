@@ -9,7 +9,6 @@ from .exceptions import ConfigurationError
 try:
     config_file = pathlib.Path(__file__).parents[1] / "config.yaml"
     config = yaml.safe_load(config_file.read_text(encoding="utf-8"))
-    print(config)
 except yaml.YAMLError:
     raise ConfigurationError("failed to load config.yaml")
 

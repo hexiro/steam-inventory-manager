@@ -29,6 +29,7 @@ class SteamInventoryManager:
 
     def main(self):
         if not any(self.inventory.items_to_trade):
+            print("Found no items to trade.")
             return
 
         trade_offers: Dict[Account, List[Item]] = defaultdict(list)
@@ -46,6 +47,8 @@ class SteamInventoryManager:
                 partner=self.main_account,
                 trade_id=trade_id,
             )
+        print(f"Successfully opened {len(trade_offers)} trade offers with {len(self.inventory.items_to_trade)} total "
+              "items.")
 
 
 if __name__ == "__main__":
