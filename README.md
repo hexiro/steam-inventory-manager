@@ -4,7 +4,6 @@ Watches your Steam inventory and trades your junk skins to alternate account(s).
 Currently, only CS:GO is supported because of 3rd party pricing data.<br/>
 If you ever want to see more popular games supported, please refer me to where I can get accurate pricing information.
 
-
 ***(NOTE: this requires a shared_secret for each account and an identity secret for the main account)***
 
 ## Installation & Setup
@@ -21,3 +20,11 @@ This script can move your items automatically, and without having to pay for a s
 
 ***Q: Do I need CS:GO or Steam installed?***<br/>
 *A: Nope. Any OS that runs python 3.8+ should be just fine.*
+
+***Q: What is an identity and shared secret?***<br>
+*A: These are values used by Steam to validate trades and 2fa logins respectively. <br>
+You can use [Steam Desktop Authenticator](https://github.com/Jessecar96/SteamDesktopAuthenticator) to use your computer for 2fa, or you can retrieve these values from your phone. IOS users will need to downgrade the Steam app to version 2.0.16 or lower.*
+
+## Special Thanks
+Thank you to [steam.py](https://github.com/Gobot1234/steam.py) and [steam](https://github.com/ValvePython/steam)
+for doing all the work documenting the steam api, and providing great resources. ♥
