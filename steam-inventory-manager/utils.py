@@ -4,7 +4,6 @@ import secrets
 import struct
 import time
 from hashlib import sha1
-from time import time
 
 import requests
 
@@ -22,12 +21,12 @@ def generate_session_id() -> str:
 
 def do_no_cache():
     """Generates a "donotcache" value to be used on steam. Not really sure if this proper."""
-    return int(time() * 1000) - (18 * 60 * 60)
+    return int(time.time() * 1000) - (18 * 60 * 60)
 
 
 def generate_one_time_code(shared_secret: str) -> str:
     """Generate a Steam Guard code for signing in."""
-    timestamp = int(time())
+    timestamp = int(time.time())
     time_buffer = struct.pack(">Q", timestamp // 30)  # pack as Big endian, uint64
     time_hmac = hmac.new(base64.b64decode(shared_secret), time_buffer, digestmod=sha1).digest()
     begin = ord(time_hmac[19:20]) & 0xF
@@ -59,6 +58,6 @@ def generate_device_id(user_id64: int) -> str:
 def generate_confirmation_code(identity_secret: str, tag: str, timestamp: int = None) -> str:
     """Generate a trade confirmation code.
     """
-    timestamp = timestamp or int(time())
+    timestamp = timestamp or int(time.time())
     buffer = struct.pack(">Q", timestamp) + tag.encode("ascii")
     return base64.b64encode(hmac.new(base64.b64decode(identity_secret), buffer, digestmod=sha1).digest()).decode()
