@@ -93,9 +93,10 @@ class Account:
 
     @cached_property
     def trade_token(self):
-        privacy_page = self.session.get(
-            f"https://steamcommunity.com/profiles/{self.steam_id64}/tradeoffers/privacy").text
-        return privacy_page.split('id="trade_offer_access_url"')[1].split('"')[1].split("&token=")[-1]
+        privacy_page = self.session.get(f"https://steamcommunity.com/profiles/{self.steam_id64}/tradeoffers/privacy")
+        soup = BeautifulSoup(privacy_page.text, "html.parser")
+        trade_link = soup.find("input", {"id": "trade_offer_access_url"}).attrs["value"]
+        return trade_link.split("&token=")[-1]
 
     def trade(self, partner: "Account", me: list = None, them: list = None) -> int:
         """ Sends a trade an returns the trade id """
