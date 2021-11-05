@@ -28,7 +28,7 @@ class SteamInventoryManager:
         return self.alternate_accounts[0]
 
     def main(self):
-        if not any(self.inventory.items_to_trade):
+        if not self.inventory.items_to_trade:
             print("Found no items to trade.")
             return
 

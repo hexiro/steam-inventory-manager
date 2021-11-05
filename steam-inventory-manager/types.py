@@ -7,6 +7,7 @@ from .utils import PRICES
 
 
 # for config.py
+
 @dataclass
 class Options:
     min_price: float
@@ -25,7 +26,7 @@ class Confirmation:
     id: str
     data_conf_id: int
     data_key: str
-    trade_id: int  # this isn't really always the trade ID, but for our purposes this is fine
+    trade_id: int
 
 
 class Exterior(Enum):
@@ -72,7 +73,8 @@ class Item:
     @property
     def is_weapon(self):
         # do gloves count as a weapon? probably not. but are they a *weapon* skin? yes
-        return self.type in {Type.KNIFE, Type.GLOVES, Type.PISTOL, Type.RIFLE, Type.SNIPER_RIFLE, Type.SHOTGUN, Type.SMG, Type.MACHINEGUN}
+        return self.type in {Type.KNIFE, Type.GLOVES, Type.PISTOL, Type.RIFLE, Type.SNIPER_RIFLE, Type.SHOTGUN,
+                             Type.SMG, Type.MACHINEGUN}
 
     @property
     def market_name(self):

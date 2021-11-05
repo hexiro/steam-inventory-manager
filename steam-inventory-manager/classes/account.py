@@ -1,6 +1,6 @@
 import base64
-import datetime
 import json
+import datetime
 from functools import cached_property
 from time import time
 from typing import Optional, Tuple, List, Type, Any, Dict
@@ -103,7 +103,7 @@ class Account:
             "sessionid": self.session_id,
             "serverid": 1,
             "partner": partner.steam_id64,
-            "tradeoffermessage": "",
+            "tradeoffermessage": f"Trade created by steam-inventory-manager on {datetime.datetime.now():%x at %X}",
             "json_tradeoffer": json.dumps({
                 "newversion": "true",
                 "version": 2,
