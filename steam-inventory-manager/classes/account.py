@@ -12,7 +12,7 @@ from bs4 import BeautifulSoup
 from .. import cache
 from ..exceptions import RequestError, IncorrectPassword, LoginError, CaptchaRequired, EmailCodeRequired, \
     TwoFactorCodeInvalid, TradeError, CredentialsError
-from ..types import Confirmation
+from ..datatypes import Confirmation
 from ..utils import generate_session_id, do_no_cache, generate_one_time_code, generate_device_id, \
     generate_confirmation_code
 

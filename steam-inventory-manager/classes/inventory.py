@@ -3,7 +3,7 @@ from typing import List
 
 import requests
 
-from ..types import Exterior, Item, Type
+from ..datatypes import Exterior, Item, Type
 
 
 class Inventory:

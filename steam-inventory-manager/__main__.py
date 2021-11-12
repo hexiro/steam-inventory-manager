@@ -3,7 +3,7 @@ from typing import List, Dict
 
 from . import config
 from .classes import Account, Inventory
-from .types import Type, Item
+from .datatypes import Type, Item
 
 
 class SteamInventoryManager:

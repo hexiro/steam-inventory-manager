@@ -3,7 +3,7 @@ import pathlib
 import yaml
 
 from .classes import Account
-from .types import Type, Options
+from .datatypes import Type, Options
 from .exceptions import ConfigurationError
 
 try:
