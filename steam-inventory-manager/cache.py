@@ -7,7 +7,7 @@ import sys
 from typing import Optional
 
 
-def cached_file(account_name: str) -> Optional[pathlib.Path]:
+def cache_file(account_name: str) -> Optional[pathlib.Path]:
     """
     Returns a parent directory path
     where persistent application data can be stored.
@@ -37,7 +37,7 @@ def cached_file(account_name: str) -> Optional[pathlib.Path]:
 
 
 def session_data(account_name: str) -> dict:
-    file = cached_file(account_name)
+    file = cache_file(account_name)
     if not file or not file.exists():
         return {}
     try:
@@ -47,6 +47,6 @@ def session_data(account_name: str) -> dict:
 
 
 def store_session_data(account_name: str, **kwargs):
-    file = cached_file(account_name)
+    file = cache_file(account_name)
     if file:
         file.write_text(json.dumps(kwargs), encoding="utf-8", errors="ignore")

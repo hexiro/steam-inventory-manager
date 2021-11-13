@@ -36,4 +36,4 @@ try:
         always_trade_patches=config["options"].get("always-trade-patches", False),
     )
 except KeyError as e:
-    raise ConfigurationError(f"key, {str(e)} not present in config.yaml") from None
+    raise ConfigurationError(f"key, {e} not present in config.yaml") from None
