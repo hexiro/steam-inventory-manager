@@ -10,17 +10,36 @@ import rsa
 from bs4 import BeautifulSoup
 
 from .. import cache
-from ..exceptions import RequestError, IncorrectPassword, LoginError, CaptchaRequired, EmailCodeRequired, \
-    TwoFactorCodeInvalid, TradeError, CredentialsError
+from ..exceptions import (
+    RequestError,
+    IncorrectPassword,
+    LoginError,
+    CaptchaRequired,
+    EmailCodeRequired,
+    TwoFactorCodeInvalid,
+    TradeError,
+    CredentialsError,
+)
 from ..datatypes import Confirmation
-from ..utils import generate_session_id, do_no_cache, generate_one_time_code, generate_device_id, \
-    generate_confirmation_code
+from ..utils import (
+    generate_session_id,
+    do_no_cache,
+    generate_one_time_code,
+    generate_device_id,
+    generate_confirmation_code,
+)
 
 
 class Account:
-
-    def __init__(self, username: str, password: str, *, shared_secret: str, identity_secret: str = None,
-                 priority: List[Type] = None):
+    def __init__(
+        self,
+        username: str,
+        password: str,
+        *,
+        shared_secret: str,
+        identity_secret: str = None,
+        priority: List[Type] = None,
+    ):
         self._username: str = username
         self._password: str = password
         self._shared_secret: str = shared_secret
@@ -35,12 +54,14 @@ class Account:
         self._confirmations: dict = {}
 
     def __repr__(self):
-        return (f"<{self.__class__.__name__} "
-                f"username={self.username!r} "
-                f"password={self.password!r} "
-                f"shared_secret={self.shared_secret!r} "
-                f"identify_secret={self.identity_secret!r}"
-                f">")
+        return (
+            f"<{self.__class__.__name__} "
+            f"username={self.username!r} "
+            f"password={self.password!r} "
+            f"shared_secret={self.shared_secret!r} "
+            f"identify_secret={self.identity_secret!r}"
+            f">"
+        )
 
     @property
     def username(self) -> str:
@@ -99,34 +120,27 @@ class Account:
         return trade_link.split("&token=")[-1]
 
     def trade(self, partner: "Account", me: list = None, them: list = None) -> int:
-        """ Sends a trade an returns the trade id """
+        """Sends a trade an returns the trade id"""
         payload = {
             "sessionid": self.session_id,
             "serverid": 1,
             "partner": partner.steam_id64,
             "tradeoffermessage": f"Trade created by steam-inventory-manager on {datetime.datetime.now():%x at %X}",
-            "json_tradeoffer": json.dumps({
-                "newversion": "true",
-                "version": 2,
-                "me": {
-                    "assets": me or [],
-                    "currency": [],
-                    "ready": "false"
-                },
-                "them": {
-                    "assets": them or [],
-                    "currency": [],
-                    "ready": "false"
-                },
-            }),
+            "json_tradeoffer": json.dumps(
+                {
+                    "newversion": "true",
+                    "version": 2,
+                    "me": {"assets": me or [], "currency": [], "ready": "false"},
+                    "them": {"assets": them or [], "currency": [], "ready": "false"},
+                }
+            ),
             "captcha": "",
-            "trade_offer_create_params": json.dumps({
-                "trade_offer_access_token": partner.trade_token
-            })
+            "trade_offer_create_params": json.dumps({"trade_offer_access_token": partner.trade_token}),
         }
         headers = {"Referer": "https://steamcommunity.com/tradeoffer/new/"}
-        tradeoffer = self.session.post("https://steamcommunity.com/tradeoffer/new/send",
-                                       data=payload, headers=headers).json()
+        tradeoffer = self.session.post(
+            "https://steamcommunity.com/tradeoffer/new/send", data=payload, headers=headers
+        ).json()
 
         if tradeoffer.get("strError"):
             raise TradeError(tradeoffer["strError"])
@@ -144,8 +158,9 @@ class Account:
             "captcha": "",
         }
         headers = {"Referer": f"https://steamcommunity.com/tradeoffer/{trade_id}"}
-        resp = self.session.post(f"https://steamcommunity.com/tradeoffer/{trade_id}/accept", data=payload,
-                                 headers=headers).json()
+        resp = self.session.post(
+            f"https://steamcommunity.com/tradeoffer/{trade_id}/accept", data=payload, headers=headers
+        ).json()
         # confirmation shouldn't be needed as `needs_mobile_confirmation` will be False
         # if no items are present of this account's side
         self._confirm_trade(trade_id, resp)
@@ -203,7 +218,7 @@ class Account:
         email_required = attempt.get("emailauth_needed", False)
         captcha_required = attempt.get("captcha_needed", False)
         two_factor_required = attempt.get("requires_twofactor", False)
-        password_incorrect = attempt.get('clear_password_field', False)
+        password_incorrect = attempt.get("clear_password_field", False)
         message = attempt["message"]
 
         if captcha_required:
@@ -221,7 +236,7 @@ class Account:
 
     def _attempt_login(self):
         data = {
-            'username': self.username,
+            "username": self.username,
             "password": self.encrypted_password,
             "emailauth": "",
             "emailsteamid": "",
@@ -242,10 +257,11 @@ class Account:
 
     def _rsa_key(self) -> Tuple[rsa.PublicKey, datetime.datetime]:
         try:
-            resp = self.session.post("https://steamcommunity.com/login/getrsakey/", timeout=15, data={
-                "username": self.username,
-                "donotcache": do_no_cache()
-            }).json()
+            resp = self.session.post(
+                "https://steamcommunity.com/login/getrsakey/",
+                timeout=15,
+                data={"username": self.username, "donotcache": do_no_cache()},
+            ).json()
             mod = int(resp["publickey_mod"], 16)
             exp = int(resp["publickey_exp"], 16)
             timestamp = resp["timestamp"]
@@ -256,7 +272,7 @@ class Account:
             raise LoginError("Unable to retrieve RSA keys from steam.")
 
     def _transfer_cookie(self, name: str, value: str):
-        """ sets a cookie for the three main steam domains """
+        """sets a cookie for the three main steam domains"""
         for domain in ["store.steampowered.com", "help.steampowered.com", "steamcommunity.com"]:
             self.session.cookies.set(name, value, domain=domain, secure=True)
 
@@ -318,5 +334,9 @@ class Account:
         steam_login_secure = self.session.cookies.get(name="steamLoginSecure", domain="steamcommunity.com")
         # this should always be set, but just in case, we don't want to set bad data in the json file.
         if steam_login_secure and self.session_id and self.steam_id64:
-            cache.store_session_data(self.username, session_id=self.session_id, steam_id64=self.steam_id64,
-                                     steam_login_secure=steam_login_secure)
+            cache.store_session_data(
+                self.username,
+                session_id=self.session_id,
+                steam_id64=self.steam_id64,
+                steam_login_secure=steam_login_secure,
+            )

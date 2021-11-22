@@ -7,14 +7,12 @@ from ..datatypes import Exterior, Item, Type
 
 
 class Inventory:
-
     def __init__(self, steam_id64: int) -> None:
         self.steam_id64: int = steam_id64
 
     @cached_property
     def items(self) -> List[Item]:
-        resp = requests.get(
-            f"https://steamcommunity.com/inventory/{self.steam_id64}/730/2?l=english&count=5000").json()
+        resp = requests.get(f"https://steamcommunity.com/inventory/{self.steam_id64}/730/2?l=english&count=5000").json()
         assets: dict = resp["assets"]
         descriptions: dict = resp["descriptions"]
 
@@ -32,8 +30,14 @@ class Inventory:
 
             type_values = [x.value for x in Type]
             # there may be better ways to parse this.
-            raw_exterior = next((x["value"].split("Exterior: ")[-1] for x in description["descriptions"] if
-                                 x["value"].startswith("Exterior: ")), None)
+            raw_exterior = next(
+                (
+                    x["value"].split("Exterior: ")[-1]
+                    for x in description["descriptions"]
+                    if x["value"].startswith("Exterior: ")
+                ),
+                None,
+            )
             raw_type = next((x["localized_tag_name"] for x in description["tags"] if x["category"] == "Type"), None)
 
             name = description["name"]
@@ -46,15 +50,17 @@ class Inventory:
             exterior = Exterior(raw_exterior) if raw_exterior else None
             type = Type(raw_type) if raw_type and raw_type in type_values else None
 
-            items.append(Item(
-                name=name,
-                appid=appid,
-                contextid=contextid,
-                amount=amount,
-                assetid=assetid,
-                exterior=exterior,
-                type=type
-            ))
+            items.append(
+                Item(
+                    name=name,
+                    appid=appid,
+                    contextid=contextid,
+                    amount=amount,
+                    assetid=assetid,
+                    exterior=exterior,
+                    type=type,
+                )
+            )
 
         return items
 

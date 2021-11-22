@@ -7,7 +7,6 @@ from .datatypes import Type, Item
 
 
 class SteamInventoryManager:
-
     def __init__(self):
         self.main_account: Account = config.main_account
         self.main_account.login()
@@ -47,8 +46,10 @@ class SteamInventoryManager:
                 partner=self.main_account,
                 trade_id=trade_id,
             )
-        print(f"Successfully opened {len(trade_offers)} trade offers with {len(self.inventory.items_to_trade)} total "
-              "items.")
+        print(
+            f"Successfully opened {len(trade_offers)} trade offers with {len(self.inventory.items_to_trade)} total "
+            "items."
+        )
 
 
 if __name__ == "__main__":

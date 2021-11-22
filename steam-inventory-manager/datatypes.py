@@ -8,6 +8,7 @@ from .utils import PRICES
 
 # for config.py
 
+
 @dataclass
 class Options:
     min_price: float
@@ -20,6 +21,7 @@ class Options:
 
 
 # for steam stuff
+
 
 @dataclass
 class Confirmation:
@@ -73,8 +75,16 @@ class Item:
     @property
     def is_weapon(self):
         # do gloves count as a weapon? probably not. but are they a *weapon* skin? yes
-        return self.type in {Type.KNIFE, Type.GLOVES, Type.PISTOL, Type.RIFLE, Type.SNIPER_RIFLE, Type.SHOTGUN,
-                             Type.SMG, Type.MACHINEGUN}
+        return self.type in {
+            Type.KNIFE,
+            Type.GLOVES,
+            Type.PISTOL,
+            Type.RIFLE,
+            Type.SNIPER_RIFLE,
+            Type.SHOTGUN,
+            Type.SMG,
+            Type.MACHINEGUN,
+        }
 
     @property
     def market_name(self):
@@ -82,11 +92,8 @@ class Item:
 
     @property
     def trade_asset(self):
-        """ Contains all the details needed to trade an item """
-        return {"appid": self.appid,
-                "contextid": self.contextid,
-                "amount": self.amount,
-                "assetid": self.assetid}
+        """Contains all the details needed to trade an item"""
+        return {"appid": self.appid, "contextid": self.contextid, "amount": self.amount, "assetid": self.assetid}
 
     @cached_property
     def price(self) -> float:

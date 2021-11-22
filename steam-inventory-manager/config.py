@@ -17,14 +17,17 @@ try:
         username=config["main-account"]["username"],
         password=config["main-account"]["password"],
         shared_secret=config["main-account"]["shared-secret"],
-        identity_secret=config["main-account"]["identity-secret"]
+        identity_secret=config["main-account"]["identity-secret"],
     )
-    alternate_accounts = [Account(
-        username=acc["username"],
-        password=acc["password"],
-        shared_secret=acc["shared-secret"],
-        priority=[Type(p.title() if p != "SMG" else p) for p in acc["priority"]] if "priority" in acc else None
-    ) for acc in config["alternate-accounts"]]
+    alternate_accounts = [
+        Account(
+            username=acc["username"],
+            password=acc["password"],
+            shared_secret=acc["shared-secret"],
+            priority=[Type(p.title() if p != "SMG" else p) for p in acc["priority"]] if "priority" in acc else None,
+        )
+        for acc in config["alternate-accounts"]
+    ]
 
     options = Options(
         min_price=config["options"]["min-price"],
