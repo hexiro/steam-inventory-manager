@@ -30,15 +30,13 @@ class Inventory:
 
             type_values = [x.value for x in Type]
             # there may be better ways to parse this.
-            raw_exterior = next(
-                (
-                    x["value"].split("Exterior: ")[-1]
-                    for x in description["descriptions"]
-                    if x["value"].startswith("Exterior: ")
-                ),
-                None,
-            )
-            raw_type = next((x["localized_tag_name"] for x in description["tags"] if x["category"] == "Type"), None)
+            exterior_value: List[str] = [
+                x["value"] for x in description["descriptions"] if x["value"].startswith("Exterior: ")
+            ]
+            type_value: List[str] = [x["localized_tag_name"] for x in description["tags"] if x["category"] == "Type"]
+
+            raw_exterior: str = exterior_value[0].split("Exterior: ")[-1] if exterior_value else None
+            raw_type: str = type_value[0] if type_value and type_value[0] in type_values else None
 
             name = description["name"]
             # right now, only csgo is supported so these are hard coded
@@ -48,7 +46,7 @@ class Inventory:
             assetid = asset["assetid"]
             # optionals
             exterior = Exterior(raw_exterior) if raw_exterior else None
-            type = Type(raw_type) if raw_type and raw_type in type_values else None
+            type = Type(raw_type) if raw_type else None
 
             items.append(
                 Item(

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
-from functools import cached_property
+from typing import Optional
 
 from . import config
 from .utils import PRICES
@@ -69,8 +69,8 @@ class Item:
     amount: int
     assetid: int
     # not required
-    exterior: Exterior = None
-    type: Type = None
+    exterior: Optional[Exterior] = None
+    type: Optional[Type] = None
 
     @property
     def is_weapon(self):
@@ -95,16 +95,16 @@ class Item:
         """Contains all the details needed to trade an item"""
         return {"appid": self.appid, "contextid": self.contextid, "amount": self.amount, "assetid": self.assetid}
 
-    @cached_property
+    @property
     def price(self) -> float:
         if self.market_name not in PRICES:
             return -1
         item = PRICES[self.market_name]
         if "price" not in item:
             return -1
+        # imo median is better then an average because of extreme undercuts
+        # and super high prices skewing the average
         queue = ("30_days", "all_time", "7_days", "24_hours")
-        # imo median is better then an average because of extreme
-        # undercuts and super high prices skewing the average
         for key in queue:
             if key in item["price"]:
                 return item["price"][key]["median"]

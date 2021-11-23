@@ -30,7 +30,7 @@ def cache_file(account_name: str) -> Optional[pathlib.Path]:
     folder = appdata_equivalent / "steam-inventory-manager"
     try:
         folder.mkdir(exist_ok=True)
-    except (FileNotFoundError, OSError):
+    except OSError:
         return
 
     return folder / (account_name + ".json")
