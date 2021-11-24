@@ -20,7 +20,7 @@ from ..exceptions import (
     TradeError,
     CredentialsError,
 )
-from ..datatypes import Confirmation
+from ..datatypes import TradeConfirmation
 from ..utils import (
     generate_session_id,
     do_no_cache,
@@ -305,7 +305,7 @@ class Account:
             key = confirmation["data-key"]
             trade_id = int(confirmation.get("data-creator", 0))
             confirmation_id = confirmation["id"].split("conf")[1]
-            self._confirmations[trade_id] = Confirmation(confirmation_id, data_conf_id, key, trade_id)
+            self._confirmations[trade_id] = TradeConfirmation(confirmation_id, data_conf_id, key, trade_id)
         return self._confirmations
 
     def _is_logged_in(self) -> bool:

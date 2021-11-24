@@ -3,7 +3,7 @@ import pathlib
 import yaml
 
 from .classes import Account
-from .datatypes import Type, Options
+from .datatypes import ItemType, ConfigurationOptions
 from .exceptions import ConfigurationError
 
 try:
@@ -24,12 +24,12 @@ try:
             username=acc["username"],
             password=acc["password"],
             shared_secret=acc["shared-secret"],
-            priority=[Type(p.title() if p != "SMG" else p) for p in acc["priority"]] if "priority" in acc else None,
+            priority=[ItemType(p.title() if p != "SMG" else p) for p in acc["priority"]] if "priority" in acc else None,
         )
         for acc in config["alternate-accounts"]
     ]
 
-    options = Options(
+    options = ConfigurationOptions(
         min_price=config["options"]["min-price"],
         always_trade_graffities=config["options"].get("always-trade-graffities", False),
         always_trade_stickers=config["options"].get("always-trade-stickers", False),

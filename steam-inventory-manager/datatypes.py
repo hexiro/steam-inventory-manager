@@ -10,7 +10,7 @@ from .utils import PRICES
 
 
 @dataclass
-class Options:
+class ConfigurationOptions:
     min_price: float
     always_trade_graffities: bool = False
     always_trade_stickers: bool = False
@@ -24,14 +24,14 @@ class Options:
 
 
 @dataclass
-class Confirmation:
+class TradeConfirmation:
     id: str
     data_conf_id: int
     data_key: str
     trade_id: int
 
 
-class Exterior(Enum):
+class ItemExterior(Enum):
     FACTORY_NEW = "Factory New"
     MINIMAL_WEAR = "Minimal Wear"
     FIELD_TESTED = "Field-Tested"
@@ -39,7 +39,7 @@ class Exterior(Enum):
     BATTLE_SCARRED = "Battle-Scarred"
 
 
-class Type(Enum):
+class ItemType(Enum):
     # weapon types
     KNIFE = "Knife"
     GLOVES = "Gloves"
@@ -69,21 +69,21 @@ class Item:
     amount: int
     assetid: int
     # not required
-    exterior: Optional[Exterior] = None
-    type: Optional[Type] = None
+    exterior: Optional[ItemExterior] = None
+    type: Optional[ItemType] = None
 
     @property
     def is_weapon(self):
         # do gloves count as a weapon? probably not. but are they a *weapon* skin? yes
         return self.type in {
-            Type.KNIFE,
-            Type.GLOVES,
-            Type.PISTOL,
-            Type.RIFLE,
-            Type.SNIPER_RIFLE,
-            Type.SHOTGUN,
-            Type.SMG,
-            Type.MACHINEGUN,
+            ItemType.KNIFE,
+            ItemType.GLOVES,
+            ItemType.PISTOL,
+            ItemType.RIFLE,
+            ItemType.SNIPER_RIFLE,
+            ItemType.SHOTGUN,
+            ItemType.SMG,
+            ItemType.MACHINEGUN,
         }
 
     @property
@@ -112,17 +112,17 @@ class Item:
 
     @property
     def should_be_traded(self):
-        if config.options.always_trade_graffities and self.type == Type.GRAFFITI:
+        if config.options.always_trade_graffities and self.type == ItemType.GRAFFITI:
             return True
-        if config.options.always_trade_stickers and self.type == Type.STICKER:
+        if config.options.always_trade_stickers and self.type == ItemType.STICKER:
             return True
-        if config.options.always_trade_agents and self.type == Type.AGENT:
+        if config.options.always_trade_agents and self.type == ItemType.AGENT:
             return True
-        if config.options.always_trade_containers and self.type == Type.CONTAINER:
+        if config.options.always_trade_containers and self.type == ItemType.CONTAINER:
             return True
-        if config.options.always_trade_collectibles and self.type == Type.COLLECTIBLE:
+        if config.options.always_trade_collectibles and self.type == ItemType.COLLECTIBLE:
             return True
-        if config.options.always_trade_patches and self.type == Type.PATCH:
+        if config.options.always_trade_patches and self.type == ItemType.PATCH:
             return True
         # if the item doesn't have a price, for now i'm not going to trade them.
         return self.price < config.options.min_price and self.price != -1

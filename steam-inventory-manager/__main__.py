@@ -3,7 +3,7 @@ from typing import List, Dict
 
 from . import config
 from .classes import Account, Inventory
-from .datatypes import Type, Item
+from .datatypes import ItemType, Item
 
 
 class SteamInventoryManager:
@@ -16,7 +16,7 @@ class SteamInventoryManager:
 
         self.inventory: Inventory = Inventory(self.main_account.steam_id64)
 
-    def which_alternate_account(self, type: Type):
+    def which_alternate_account(self, type: ItemType):
         """
         Finds which account the item should be traded to based on its type.
         Defaults to the first account in the list

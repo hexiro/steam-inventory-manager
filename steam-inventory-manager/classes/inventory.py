@@ -3,7 +3,7 @@ from typing import List
 
 import requests
 
-from ..datatypes import Exterior, Item, Type
+from ..datatypes import ItemExterior, Item, ItemType
 
 
 class Inventory:
@@ -28,7 +28,7 @@ class Inventory:
             if description["tradable"] == 0:
                 continue
 
-            type_values = [x.value for x in Type]
+            type_values = [x.value for x in ItemType]
             # there may be better ways to parse this.
             exterior_value: List[str] = [
                 x["value"] for x in description["descriptions"] if x["value"].startswith("Exterior: ")
@@ -45,8 +45,8 @@ class Inventory:
             amount = int(asset["amount"])
             assetid = asset["assetid"]
             # optionals
-            exterior = Exterior(raw_exterior) if raw_exterior else None
-            type = Type(raw_type) if raw_type else None
+            exterior = ItemExterior(raw_exterior) if raw_exterior else None
+            type = ItemType(raw_type) if raw_type else None
 
             items.append(
                 Item(
