@@ -1,4 +1,5 @@
 import pathlib
+from typing import List, Optional
 
 import yaml
 
@@ -13,25 +14,30 @@ except yaml.YAMLError:
     raise ConfigurationError("failed to load config.yaml")
 
 try:
-    main_account = Account(
+    main_account: Account = Account(
         username=config["main-account"]["username"],
         password=config["main-account"]["password"],
         shared_secret=config["main-account"]["shared-secret"],
         identity_secret=config["main-account"]["identity-secret"],
     )
-    alternate_accounts = [
-        Account(
-            username=acc["username"],
-            password=acc["password"],
-            shared_secret=acc["shared-secret"],
-            priorities=[ItemType(p.title() if p != "SMG" else p) for p in acc["priorities"]]
-            if "priorities" in acc
-            else None,
-        )
-        for acc in config["alternate-accounts"]
-    ]
 
-    options = ConfigurationOptions(
+    alternate_accounts: List[Account] = []
+    for acc in config["alternate-accounts"]:
+        priorities: List[ItemType] = []
+        if "priorities" in acc:
+            for priority in acc["priorities"]:
+                caps = priority.title() if priority != "SMG" else priority
+                priorities.append(ItemType(caps))
+        alternate_accounts.append(
+            Account(
+                username=acc["username"],
+                password=acc["password"],
+                shared_secret=acc["shared-secret"],
+                priorities=priorities,
+            )
+        )
+
+    options: ConfigurationOptions = ConfigurationOptions(
         min_price=config["options"]["min-price"],
         always_trade_graffities=config["options"].get("always-trade-graffities", False),
         always_trade_stickers=config["options"].get("always-trade-stickers", False),
