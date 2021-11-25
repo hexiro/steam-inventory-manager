@@ -22,7 +22,7 @@ class SteamInventoryManager:
         Defaults to the first account in the list
         """
         for acc in self.alternate_accounts:
-            if acc.priority and type in acc.priority:
+            if acc.priorities and type in acc.priorities:
                 return acc
         return self.alternate_accounts[0]
 

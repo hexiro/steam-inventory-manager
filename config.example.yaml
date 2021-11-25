@@ -20,7 +20,7 @@ alternate-accounts:
     # prioritizes giving a certain type of items to this account.
     # all current options listed. Useful for organizing multiple accounts with different items.
     # (ex. one account for cases (containers) and another for graffities)
-    priority: ["Knife", "Gloves", "Pistol", "Rifle", "Sniper Rifle", "Shotgun", "SMG", "Machinegun", "Graffiti", "Sticker", "Agent", "Container", "Collectible", "Patch"]
+    priorities: ["Knife", "Gloves", "Pistol", "Rifle", "Sniper Rifle", "Shotgun", "SMG", "Machinegun", "Graffiti", "Sticker", "Agent", "Container", "Collectible", "Patch"]
 options:
   # minimum price of a skin for it to stay in your inventory
   min-price: 1.00

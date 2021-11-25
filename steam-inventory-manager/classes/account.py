@@ -1,15 +1,16 @@
 import base64
-import json
 import datetime
+import json
 from functools import cached_property
 from time import time
-from typing import Optional, Tuple, List, Type, Any, Dict
+from typing import Optional, Tuple, List, Any, Dict
 
 import requests
 import rsa
 from bs4 import BeautifulSoup
 
 from .. import cache
+from ..datatypes import TradeConfirmation, ItemType
 from ..exceptions import (
     RequestError,
     IncorrectPassword,
@@ -20,7 +21,6 @@ from ..exceptions import (
     TradeError,
     CredentialsError,
 )
-from ..datatypes import TradeConfirmation
 from ..utils import (
     generate_session_id,
     do_no_cache,
@@ -37,8 +37,8 @@ class Account:
         password: str,
         *,
         shared_secret: str,
-        identity_secret: str = None,
-        priority: List[Type] = None,
+        identity_secret: Optional[str] = None,
+        priorities: Optional[List[ItemType]] = None,
     ):
         self._username: str = username
         self._password: str = password
@@ -48,10 +48,10 @@ class Account:
         self._steam_id64: Optional[int] = None
         self._session = requests.Session()
         self._session.headers["User-Agent"] = "python steam-inventory-manager/v1.0.0"
-        self._session_id = None
+        self._session_id: Optional[str] = None
         self._public_key, self._timestamp = self._rsa_key()
-        self.priority = priority
-        self._confirmations: dict = {}
+        self._priorities: List[ItemType] = priorities or []
+        self._confirmations: Dict[int, TradeConfirmation] = {}
 
     def __repr__(self):
         return (
@@ -107,6 +107,10 @@ class Account:
     @property
     def timestamp(self) -> datetime.datetime:
         return self._timestamp
+
+    @property
+    def priorities(self) -> List[ItemType]:
+        return self._priorities
 
     @property
     def encrypted_password(self):

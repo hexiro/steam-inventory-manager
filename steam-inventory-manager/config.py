@@ -24,7 +24,9 @@ try:
             username=acc["username"],
             password=acc["password"],
             shared_secret=acc["shared-secret"],
-            priority=[ItemType(p.title() if p != "SMG" else p) for p in acc["priority"]] if "priority" in acc else None,
+            priorities=[ItemType(p.title() if p != "SMG" else p) for p in acc["priorities"]]
+            if "priorities" in acc
+            else None,
         )
         for acc in config["alternate-accounts"]
     ]
