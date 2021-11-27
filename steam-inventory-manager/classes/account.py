@@ -10,7 +10,7 @@ import rsa
 from bs4 import BeautifulSoup
 
 from .. import cache
-from ..datatypes import TradeConfirmation, ItemType
+from ..datatypes import TradeConfirmation, ItemType, SessionData
 from ..exceptions import (
     RequestError,
     IncorrectPassword,
@@ -321,9 +321,9 @@ class Account:
         account_data = cache.session_data(self.username)
         if not account_data:
             return
-        session_id = account_data.get("session_id")
-        steam_id64 = account_data.get("steam_id64")
-        steam_login_secure = account_data.get("steam_login_secure")
+        session_id = account_data["session_id"]
+        steam_id64 = account_data["steam_id64"]
+        steam_login_secure = account_data["steam_login_secure"]
         if session_id:
             self._session_id = session_id
             self._transfer_cookie("sessionid", self.session_id)
@@ -335,12 +335,12 @@ class Account:
             self._logged_in = True
 
     def _log_session(self):
-        steam_login_secure = self.session.cookies.get(name="steamLoginSecure", domain="steamcommunity.com")
         # this should always be set, but just in case, we don't want to set bad data in the json file.
-        if steam_login_secure and self.session_id and self.steam_id64:
-            cache.store_session_data(
-                self.username,
-                session_id=self.session_id,
-                steam_id64=self.steam_id64,
-                steam_login_secure=steam_login_secure,
-            )
+        if "steamLoginSecure" in self.session.cookies and self.session_id and self.steam_id64:
+            steam_login_secure: str = self.session.cookies.get(name="steamLoginSecure", domain="steamcommunity.com")
+            session_data: SessionData = {
+                "session_id": self.session_id,
+                "steam_id64": self.steam_id64,
+                "steam_login_secure": steam_login_secure,
+            }
+            cache.store_session_data(self.username, session_data)

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import Optional
+from typing import Optional, TypedDict
 
 from . import config
 from .utils import PRICES
@@ -18,6 +18,12 @@ class ConfigurationOptions:
     always_trade_containers: bool = False
     always_trade_collectibles: bool = False
     always_trade_patches: bool = False
+
+
+class SessionData(TypedDict):
+    session_id: str
+    steam_id64: int
+    steam_login_secure: str
 
 
 # for steam stuff

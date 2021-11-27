@@ -1,28 +1,28 @@
 from collections import defaultdict
 from typing import List, Dict
 
-from . import config
+from .config import main_account, alternate_accounts
 from .classes import Account, Inventory
 from .datatypes import ItemType, Item
 
 
 class SteamInventoryManager:
     def __init__(self):
-        self.main_account: Account = config.main_account
+        self.main_account: Account = main_account
         self.main_account.login()
-        self.alternate_accounts: List[Account] = config.alternate_accounts
+        self.alternate_accounts: List[Account] = alternate_accounts
         for acc in self.alternate_accounts:
             acc.login()
 
         self.inventory: Inventory = Inventory(self.main_account.steam_id64)
 
-    def which_alternate_account(self, type: ItemType):
+    def which_alternate_account(self, item_type: ItemType):
         """
         Finds which account the item should be traded to based on its type.
         Defaults to the first account in the list
         """
         for acc in self.alternate_accounts:
-            if acc.priorities and type in acc.priorities:
+            if acc.priorities and item_type in acc.priorities:
                 return acc
         return self.alternate_accounts[0]
 

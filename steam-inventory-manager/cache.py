@@ -5,6 +5,7 @@ import sys
 # gets appdata folder cross-platform
 # reference: https://doc.qt.io/qt-5/qstandardpaths.html
 from typing import Optional
+from .datatypes import SessionData
 
 
 def cache_file(account_name: str) -> Optional[pathlib.Path]:
@@ -36,17 +37,17 @@ def cache_file(account_name: str) -> Optional[pathlib.Path]:
     return folder / (account_name + ".json")
 
 
-def session_data(account_name: str) -> dict:
+def session_data(account_name: str) -> Optional[SessionData]:
     file = cache_file(account_name)
     if not file or not file.exists():
-        return {}
+        return
     try:
         return json.loads(file.read_text(encoding="utf-8", errors="ignore"))
     except (json.JSONDecodeError, FileNotFoundError):
-        return {}
+        return
 
 
-def store_session_data(account_name: str, **kwargs):
+def store_session_data(account_name: str, session_data: SessionData):
     file = cache_file(account_name)
     if file:
-        file.write_text(json.dumps(kwargs), encoding="utf-8", errors="ignore")
+        file.write_text(json.dumps(session_data), encoding="utf-8", errors="ignore")
