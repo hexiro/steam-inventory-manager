@@ -305,11 +305,11 @@ class Account:
         if soup.select("#mobileconf_empty"):
             return self._confirmations
         for confirmation in soup.select("#mobileconf_list .mobileconf_list_entry"):
-            data_conf_id = confirmation["data-confid"]
-            key = confirmation["data-key"]
-            trade_id = int(confirmation.get("data-creator", 0))
-            confirmation_id = confirmation["id"].split("conf")[1]
-            self._confirmations[trade_id] = TradeConfirmation(confirmation_id, data_conf_id, key, trade_id)
+            data_conf_id: int = int(confirmation["data-confid"])
+            data_key: str = confirmation["data-key"]
+            trade_id = int(confirmation["data-creator"])
+            confirmation_id: str = confirmation["id"].split("conf")[1]
+            self._confirmations[trade_id] = TradeConfirmation(confirmation_id, data_conf_id, data_key, trade_id)
         return self._confirmations
 
     def _is_logged_in(self) -> bool:
