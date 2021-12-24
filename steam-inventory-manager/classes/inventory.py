@@ -1,9 +1,12 @@
+import logging
 from functools import cached_property
 from typing import List
 
 import requests
 
 from ..datatypes import ItemExterior, Item, ItemType
+
+logger = logging.getLogger(__name__)
 
 
 class Inventory:
@@ -45,8 +48,8 @@ class Inventory:
             amount = int(asset["amount"])
             assetid = asset["assetid"]
             # optionals
-            exterior = ItemExterior(raw_exterior) if raw_exterior else None
-            type = ItemType(raw_type) if raw_type else None
+            item_exterior = ItemExterior(raw_exterior) if raw_exterior else None
+            item_type = ItemType(raw_type) if raw_type else None
 
             items.append(
                 Item(
@@ -55,11 +58,11 @@ class Inventory:
                     contextid=contextid,
                     amount=amount,
                     assetid=assetid,
-                    exterior=exterior,
-                    type=type,
+                    exterior=item_exterior,
+                    type=item_type,
                 )
             )
-
+        logger.debug(f"{items=}")
         return items
 
     @cached_property

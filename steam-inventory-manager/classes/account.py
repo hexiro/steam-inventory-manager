@@ -1,6 +1,7 @@
 import base64
 import datetime
 import json
+import logging
 from functools import cached_property
 from time import time
 from typing import Optional, Tuple, List, Any, Dict
@@ -28,6 +29,8 @@ from ..utils import (
     generate_device_id,
     generate_confirmation_code,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class Account:
@@ -194,6 +197,8 @@ class Account:
     def login(self):
         if self.logged_in:
             return self.session
+
+        logger.debug("Logging in...")
 
         self._restore_session()
         if self.logged_in:

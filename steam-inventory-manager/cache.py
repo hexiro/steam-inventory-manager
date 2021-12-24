@@ -1,11 +1,12 @@
 import json
+import logging
 import pathlib
 import sys
-
-# gets appdata folder cross-platform
-# reference: https://doc.qt.io/qt-5/qstandardpaths.html
 from typing import Optional
+
 from .datatypes import SessionData
+
+logger = logging.getLogger(__name__)
 
 
 def cache_file(account_name: str) -> Optional[pathlib.Path]:
@@ -16,6 +17,9 @@ def cache_file(account_name: str) -> Optional[pathlib.Path]:
     # linux: ~/.local/share
     # macOS: ~/Library/Application Support
     # windows: C:/Users/<USER>/AppData/Roaming
+
+    References:
+        https://doc.qt.io/qt-5/qstandardpaths.html
     """
     home = pathlib.Path.home()
 
@@ -40,14 +44,25 @@ def cache_file(account_name: str) -> Optional[pathlib.Path]:
 def session_data(account_name: str) -> Optional[SessionData]:
     file = cache_file(account_name)
     if not file or not file.exists():
+        logger.debug("No cached data found.")
         return
     try:
-        return json.loads(file.read_text(encoding="utf-8", errors="ignore"))
+        with open(file, "r", encoding="utf-8", errors="ignore") as file:
+            data = json.load(file)
+        logger.debug("Reading cache file:")
+        logger.debug(f"{data=}")
+        return data
     except (json.JSONDecodeError, FileNotFoundError):
+        logger.debug("Failed to read from cache file.")
         return
 
 
-def store_session_data(account_name: str, session_data: SessionData):
+def store_session_data(account_name: str, data: SessionData) -> None:
     file = cache_file(account_name)
-    if file:
-        file.write_text(json.dumps(session_data), encoding="utf-8", errors="ignore")
+    if not file:
+        return
+    logger.debug("Writing to cache file:")
+    logger.debug(f"{data=}")
+    logger.debug(f"{file=}")
+    with open(file, "w", encoding="utf-8", errors="ignore") as file:
+        json.dump(data, file)

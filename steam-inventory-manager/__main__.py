@@ -12,9 +12,11 @@ logger = logging.getLogger(__name__)
 class SteamInventoryManager:
     def __init__(self):
         self.main_account: Account = main_account
+        logger.debug(f"{main_account=}")
         self.main_account.login()
         self.alternate_accounts: List[Account] = alternate_accounts
-        for acc in self.alternate_accounts:
+        for index, acc in enumerate(self.alternate_accounts, start=1):
+            logger.debug(f"alternate account #{index}={acc}")
             acc.login()
 
         self.inventory: Inventory = Inventory(self.main_account.steam_id64)
@@ -45,6 +47,8 @@ class SteamInventoryManager:
                 partner=acc,
                 me=items,
             )
+            logger.info(f"Opening trade offer with {acc.username}:")
+            logger.info(f"{items=}")
             acc.accept_trade(
                 partner=self.main_account,
                 trade_id=trade_id,
