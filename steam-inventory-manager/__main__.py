@@ -5,16 +5,33 @@ from typing import List, Dict
 from .classes import Account, Inventory
 from .config import main_account, alternate_accounts
 from .datatypes import ItemType, Item
+from .utils import parse_priorities
 
 logger = logging.getLogger(__name__)
 
 
 class SteamInventoryManager:
     def __init__(self):
-        self.main_account: Account = main_account
+        self.main_account: Account = Account(
+            username=main_account["username"],
+            password=main_account["password"],
+            shared_secret=main_account["shared-secret"],
+            identity_secret=main_account["identity-secret"],
+        )
         logger.debug(f"{main_account=}")
         self.main_account.login()
-        self.alternate_accounts: List[Account] = alternate_accounts
+
+        self.alternate_accounts: List[Account] = []
+        for config_acc in alternate_accounts:
+            self.alternate_accounts.append(
+                Account(
+                    username=config_acc["username"],
+                    password=config_acc["password"],
+                    shared_secret=config_acc["shared-secret"],
+                    priorities=parse_priorities(config_acc.get("priorities")),
+                )
+            )
+
         for index, acc in enumerate(self.alternate_accounts, start=1):
             logger.debug(f"alternate account #{index}={acc}")
             acc.login()

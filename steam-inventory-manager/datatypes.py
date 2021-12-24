@@ -2,22 +2,11 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Optional, TypedDict
 
+import requests
+
 from . import config
-from .utils import PRICES
 
-
-# for config.py
-
-
-@dataclass
-class ConfigurationOptions:
-    min_price: float
-    always_trade_graffities: bool = False
-    always_trade_stickers: bool = False
-    always_trade_agents: bool = False
-    always_trade_containers: bool = False
-    always_trade_collectibles: bool = False
-    always_trade_patches: bool = False
+PRICES = requests.get("https://csgobackpack.net/api/GetItemsList/v2/").json()["items_list"]
 
 
 class SessionData(TypedDict):
@@ -118,17 +107,17 @@ class Item:
 
     @property
     def should_be_traded(self):
-        if config.options.always_trade_graffities and self.type == ItemType.GRAFFITI:
+        if config.options["always-trade-graffities"] and self.type == ItemType.GRAFFITI:
             return True
-        if config.options.always_trade_stickers and self.type == ItemType.STICKER:
+        if config.options["always-trade-stickers"] and self.type == ItemType.STICKER:
             return True
-        if config.options.always_trade_agents and self.type == ItemType.AGENT:
+        if config.options["always-trade-agents"] and self.type == ItemType.AGENT:
             return True
-        if config.options.always_trade_containers and self.type == ItemType.CONTAINER:
+        if config.options["always-trade-containers"] and self.type == ItemType.CONTAINER:
             return True
-        if config.options.always_trade_collectibles and self.type == ItemType.COLLECTIBLE:
+        if config.options["always-trade-collectibles"] and self.type == ItemType.COLLECTIBLE:
             return True
-        if config.options.always_trade_patches and self.type == ItemType.PATCH:
+        if config.options["always-trade-patches"] and self.type == ItemType.PATCH:
             return True
-        # if the item doesn't have a price, for now i'm not going to trade them.
-        return self.price < config.options.min_price and self.price != -1
+        # if the item doesn't have a price, it's likely just a pricing issue and shouldn't be traded.
+        return self.price < config.options["min-price"] and self.price != -1

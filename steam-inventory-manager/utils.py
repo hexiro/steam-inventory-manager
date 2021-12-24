@@ -4,15 +4,22 @@ import secrets
 import struct
 import time
 from hashlib import sha1
-from typing import Optional
+from typing import Optional, List
 
-import requests
-
-PRICES = requests.get("https://csgobackpack.net/api/GetItemsList/v2/").json()["items_list"]
-
+from .datatypes import ItemType
 
 # contains snippets from
 # https://github.com/Gobot1234/steam.py/blob/4af51e42c5357c90bfc476a098b900541ded1a3c/steam/guard.py
+
+
+def parse_priorities(priorities: Optional[List[str]]) -> List[ItemType]:
+    item_types: List[ItemType] = []
+    if not priorities:
+        return item_types
+    for priority in priorities:
+        caps = priority.title() if priority != "SMG" else priority
+        item_types.append(ItemType(caps))
+    return item_types
 
 
 def generate_session_id() -> str:
