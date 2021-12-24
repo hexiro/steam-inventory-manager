@@ -1,9 +1,12 @@
+import logging
 from collections import defaultdict
 from typing import List, Dict
 
-from .config import main_account, alternate_accounts
 from .classes import Account, Inventory
+from .config import main_account, alternate_accounts
 from .datatypes import ItemType, Item
+
+logger = logging.getLogger(__name__)
 
 
 class SteamInventoryManager:
@@ -28,7 +31,7 @@ class SteamInventoryManager:
 
     def main(self):
         if not self.inventory.items_to_trade:
-            print("Found no items to trade.")
+            logger.info("Found no items to trade.")
             return
 
         trade_offers: Dict[Account, List[Item]] = defaultdict(list)
@@ -46,7 +49,7 @@ class SteamInventoryManager:
                 partner=self.main_account,
                 trade_id=trade_id,
             )
-        print(
+        logger.info(
             f"Successfully opened {len(trade_offers)} trade offers with {len(self.inventory.items_to_trade)} total "
             "items."
         )

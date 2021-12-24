@@ -4,6 +4,7 @@ import secrets
 import struct
 import time
 from hashlib import sha1
+from typing import Optional
 
 import requests
 
@@ -55,8 +56,8 @@ def generate_device_id(user_id64: int) -> str:
     return f'android:{"-".join(partial_id)}'
 
 
-def generate_confirmation_code(identity_secret: str, tag: str, timestamp: int = None) -> str:
+def generate_confirmation_code(identity_secret: str, tag: str, timestamp: Optional[int] = None) -> str:
     """Generate a trade confirmation code."""
-    timestamp = timestamp or int(time.time())
+    timestamp: int = timestamp or int(time.time())
     buffer = struct.pack(">Q", timestamp) + tag.encode("ascii")
     return base64.b64encode(hmac.new(base64.b64decode(identity_secret), buffer, digestmod=sha1).digest()).decode()
