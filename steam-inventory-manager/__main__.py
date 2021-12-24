@@ -53,19 +53,21 @@ class SteamInventoryManager:
             logger.info("Found no items to trade.")
             return
 
+        logger.debug(f"items_to_trade={self.inventory.items_to_trade}")
+
         trade_offers: Dict[Account, List[Item]] = defaultdict(list)
 
         for item in self.inventory.items_to_trade:
             acc = self.which_alternate_account(item.type)
-            trade_offers[acc].append(item.trade_asset)
+            trade_offers[acc].append(item)
 
         for acc, items in trade_offers.items():
             trade_id = self.main_account.trade(
                 partner=acc,
-                me=items,
+                me=[item.trade_asset for item in items],
             )
             logger.info(f"Opening trade offer with {acc.username}:")
-            logger.info(f"{items=}")
+            logger.info(f"items={[item.name for item in items]}")
             acc.accept_trade(
                 partner=self.main_account,
                 trade_id=trade_id,

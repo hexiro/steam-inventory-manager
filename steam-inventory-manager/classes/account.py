@@ -210,6 +210,9 @@ class Account:
         attempt = self._attempt_login()
 
         if attempt.get("success", False) and attempt.get("login_complete"):
+
+            logger.debug("Successfully logged in")
+
             # successfully logged in
             self._logged_in = True
 
@@ -317,8 +320,12 @@ class Account:
             self._confirmations[trade_id] = TradeConfirmation(confirmation_id, data_conf_id, data_key, trade_id)
         return self._confirmations
 
-    def _is_logged_in(self) -> bool:
-        resp = self.session.get("https://steamcommunity.com/my/profile")
+    @staticmethod
+    def _test_login(session_id: str, steam_login_secure: str) -> bool:
+        resp = requests.get(
+            "https://steamcommunity.com/my/profile",
+            cookies={"sessionid": session_id, "steamLoginSecure": steam_login_secure},
+        )
         # redirects to profile if logged in else brings you to login page
         return "login/home" not in resp.url
 
@@ -329,15 +336,14 @@ class Account:
         session_id = account_data["session_id"]
         steam_id64 = account_data["steam_id64"]
         steam_login_secure = account_data["steam_login_secure"]
-        if session_id:
-            self._session_id = session_id
-            self._transfer_cookie("sessionid", self.session_id)
-        if steam_id64:
-            self._steam_id64 = steam_id64
-        if steam_login_secure:
-            self._transfer_cookie(name="steamLoginSecure", value=steam_login_secure)
-        if self._is_logged_in():
-            self._logged_in = True
+        if not self._test_login(session_id, steam_login_secure):
+            logger.debug("Failed to login with cached credentials.")
+            return
+        self._logged_in = True
+        self._session_id = session_id
+        self._steam_id64 = steam_id64
+        self._transfer_cookie("sessionid", self.session_id)
+        self._transfer_cookie(name="steamLoginSecure", value=steam_login_secure)
 
     def _log_session(self):
         # this should always be set, but just in case, we don't want to set bad data in the json file.

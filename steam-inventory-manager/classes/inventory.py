@@ -1,12 +1,9 @@
-import logging
 from functools import cached_property
 from typing import List
 
 import requests
 
 from ..datatypes import ItemExterior, Item, ItemType
-
-logger = logging.getLogger(__name__)
 
 
 class Inventory:
@@ -62,7 +59,6 @@ class Inventory:
                     type=item_type,
                 )
             )
-        logger.debug(f"{items=}")
         return items
 
     @cached_property
