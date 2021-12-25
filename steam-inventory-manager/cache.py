@@ -1,10 +1,13 @@
+from __future__ import annotations
+
 import json
 import logging
 import pathlib
 import sys
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 
-from .datatypes import SessionData
+if TYPE_CHECKING:
+    from .datatypes import SessionData
 
 logger = logging.getLogger(__name__)
 

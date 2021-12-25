@@ -1,31 +1,14 @@
+from __future__ import annotations
+
 import pathlib
-from typing import List, TypedDict, Optional
+from typing import TYPE_CHECKING
 
 import yaml
 
 from .exceptions import ConfigurationError
 
-
-# for config.py
-
-ConfigurationAccount = TypedDict(
-    "ConfigurationAccount",
-    {"username": str, "password": str, "shared-secret": str, "identity-secret": str, "priorities": Optional[list[str]]},
-)
-
-ConfigurationOptions = TypedDict(
-    "ConfigurationOptions",
-    {
-        "min-price": float,
-        "always-trade-graffities": bool,
-        "always-trade-stickers": bool,
-        "always-trade-agents": bool,
-        "always-trade-containers": bool,
-        "always-trade-collectibles": bool,
-        "always-trade-patches": bool,
-    },
-)
-
+if TYPE_CHECKING:
+    from .datatypes import ConfigurationAccount, ConfigurationOptions
 
 try:
     config_file = pathlib.Path(__file__).parents[1] / "config.yaml"
@@ -35,7 +18,7 @@ except yaml.YAMLError:
 
 try:
     main_account: ConfigurationAccount = config["main-account"]
-    alternate_accounts: List[ConfigurationAccount] = config["alternate-accounts"]
+    alternate_accounts: list[ConfigurationAccount] = config["alternate-accounts"]
     options: ConfigurationOptions = config["options"]
 except KeyError as e:
     raise ConfigurationError(f"key, {e} not present in config.yaml") from None

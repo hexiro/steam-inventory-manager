@@ -1,11 +1,15 @@
+from __future__ import annotations
+
 import logging
 from collections import defaultdict
-from typing import List, Dict
+from typing import TYPE_CHECKING
 
 from .classes import Account, Inventory
 from .config import main_account, alternate_accounts
-from .datatypes import ItemType, Item
 from .utils import parse_priorities
+
+if TYPE_CHECKING:
+    from .datatypes import ItemType, Item
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +25,7 @@ class SteamInventoryManager:
         logger.debug(f"{main_account=}")
         self.main_account.login()
 
-        self.alternate_accounts: List[Account] = []
+        self.alternate_accounts: list[Account] = []
         for config_acc in alternate_accounts:
             self.alternate_accounts.append(
                 Account(
@@ -55,7 +59,7 @@ class SteamInventoryManager:
 
         logger.debug(f"items_to_trade={self.inventory.items_to_trade}")
 
-        trade_offers: Dict[Account, List[Item]] = defaultdict(list)
+        trade_offers: dict[Account, list[Item]] = defaultdict(list)
 
         for item in self.inventory.items_to_trade:
             acc = self.which_alternate_account(item.type)

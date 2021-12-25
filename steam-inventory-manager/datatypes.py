@@ -8,6 +8,26 @@ from . import config
 
 PRICES = requests.get("https://csgobackpack.net/api/GetItemsList/v2/").json()["items_list"]
 
+# for config.py
+
+ConfigurationAccount = TypedDict(
+    "ConfigurationAccount",
+    {"username": str, "password": str, "shared-secret": str, "identity-secret": str, "priorities": Optional[list[str]]},
+)
+
+ConfigurationOptions = TypedDict(
+    "ConfigurationOptions",
+    {
+        "min-price": float,
+        "always-trade-graffities": bool,
+        "always-trade-stickers": bool,
+        "always-trade-agents": bool,
+        "always-trade-containers": bool,
+        "always-trade-collectibles": bool,
+        "always-trade-patches": bool,
+    },
+)
+
 
 class SessionData(TypedDict):
     session_id: str

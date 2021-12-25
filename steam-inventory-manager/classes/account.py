@@ -1,17 +1,19 @@
+from __future__ import annotations
+
 import base64
 import datetime
 import json
 import logging
 from functools import cached_property
 from time import time
-from typing import Optional, Tuple, List, Any, Dict
+from typing import Optional, Any, TYPE_CHECKING
 
 import requests
 import rsa
 from bs4 import BeautifulSoup
 
 from .. import cache
-from ..datatypes import TradeConfirmation, ItemType, SessionData
+from ..datatypes import TradeConfirmation
 from ..exceptions import (
     RequestError,
     IncorrectPassword,
@@ -30,6 +32,9 @@ from ..utils import (
     generate_confirmation_code,
 )
 
+if TYPE_CHECKING:
+    from ..datatypes import ItemType, SessionData
+
 logger = logging.getLogger(__name__)
 
 
@@ -41,7 +46,7 @@ class Account:
         *,
         shared_secret: str,
         identity_secret: Optional[str] = None,
-        priorities: Optional[List[ItemType]] = None,
+        priorities: Optional[list[ItemType]] = None,
     ):
         self._username: str = username
         self._password: str = password
@@ -53,8 +58,8 @@ class Account:
         self._session.headers["User-Agent"] = "python steam-inventory-manager/v1.0.0"
         self._session_id: Optional[str] = None
         self._public_key, self._timestamp = self._rsa_key()
-        self._priorities: List[ItemType] = priorities or []
-        self._confirmations: Dict[int, TradeConfirmation] = {}
+        self._priorities: list[ItemType] = priorities or []
+        self._confirmations: dict[int, TradeConfirmation] = {}
 
     def __repr__(self):
         return (
@@ -112,7 +117,7 @@ class Account:
         return self._timestamp
 
     @property
-    def priorities(self) -> List[ItemType]:
+    def priorities(self) -> list[ItemType]:
         return self._priorities
 
     @property
@@ -267,7 +272,7 @@ class Account:
         except json.JSONDecodeError as e:
             raise LoginError(str(e))
 
-    def _rsa_key(self) -> Tuple[rsa.PublicKey, datetime.datetime]:
+    def _rsa_key(self) -> tuple[rsa.PublicKey, datetime.datetime]:
         try:
             resp = self.session.post(
                 "https://steamcommunity.com/login/getrsakey/",
@@ -288,7 +293,7 @@ class Account:
         for domain in ["store.steampowered.com", "help.steampowered.com", "steamcommunity.com"]:
             self.session.cookies.set(name, value, domain=domain, secure=True)
 
-    def _create_confirmation_params(self, tag: str) -> Dict[str, Any]:
+    def _create_confirmation_params(self, tag: str) -> dict[str, Any]:
         timestamp = int(time())
         return {
             "p": generate_device_id(self.steam_id64),

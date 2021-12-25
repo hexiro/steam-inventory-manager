@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 import sys
 from logging import DEBUG, INFO, WARNING, ERROR, CRITICAL
@@ -15,9 +17,9 @@ class ColoredFormatter(logging.Formatter):
         https://stackoverflow.com/a/56944256
     """
 
-    def __init__(self, fmt: Optional[str] = None, datefmt: Optional[str] = None):
+    def __init__(self, fmt: Optional[str] = None, datefmt: Optional[str] = None) -> None:
         super().__init__(fmt=fmt, datefmt=datefmt)
-        self.FORMATS = {
+        self.FORMATS: dict[int, logging.Formatter] = {
             DEBUG: logging.Formatter(Fore.YELLOW + fmt),
             INFO: logging.Formatter(Fore.LIGHTWHITE_EX + fmt),
             WARNING: logging.Formatter(Fore.LIGHTYELLOW_EX + fmt),
@@ -25,7 +27,7 @@ class ColoredFormatter(logging.Formatter):
             CRITICAL: logging.Formatter(Fore.RED + Style.BRIGHT + fmt),
         }
 
-    def format(self, record: logging.LogRecord):
+    def format(self, record: logging.LogRecord) -> str:
         formatter = self.FORMATS.get(record.levelno)
         return formatter.format(record)
 
