@@ -4,7 +4,8 @@ import logging
 from collections import defaultdict
 from typing import TYPE_CHECKING
 
-from .classes import Account, Inventory
+from .account import Account
+from .inventory import Inventory
 from .config import main_account, alternate_accounts
 from .utils import parse_priorities
 
@@ -66,16 +67,16 @@ class SteamInventoryManager:
             trade_offers[acc].append(item)
 
         for acc, items in trade_offers.items():
-            trade_id = self.main_account.trade(
-                partner=acc,
-                me=[item.trade_asset for item in items],
-            )
+            # trade_id = self.main_account.trade(
+            #     partner=acc,
+            #     me=[item.trade_asset for item in items],
+            # )
             logger.info(f"Opening trade offer with {acc.username}:")
             logger.info(f"items={[item.name for item in items]}")
-            acc.accept_trade(
-                partner=self.main_account,
-                trade_id=trade_id,
-            )
+            # acc.accept_trade(
+            #     partner=self.main_account,
+            #     trade_id=trade_id,
+            # )
         logger.info(
             f"Successfully opened {len(trade_offers)} trade offers with {len(self.inventory.items_to_trade)} total "
             "items."

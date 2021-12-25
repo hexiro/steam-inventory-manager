@@ -12,9 +12,9 @@ import requests
 import rsa
 from bs4 import BeautifulSoup
 
-from .. import cache
-from ..datatypes import TradeConfirmation
-from ..exceptions import (
+from . import cache
+from .datatypes import TradeConfirmation
+from .exceptions import (
     RequestError,
     IncorrectPassword,
     LoginError,
@@ -24,7 +24,7 @@ from ..exceptions import (
     TradeError,
     CredentialsError,
 )
-from ..utils import (
+from .utils import (
     generate_session_id,
     do_no_cache,
     generate_one_time_code,
@@ -33,7 +33,7 @@ from ..utils import (
 )
 
 if TYPE_CHECKING:
-    from ..datatypes import ItemType, SessionData
+    from .datatypes import ItemType, SessionData
 
 logger = logging.getLogger(__name__)
 

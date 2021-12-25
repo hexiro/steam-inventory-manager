@@ -4,7 +4,7 @@ from functools import cached_property
 
 import requests
 
-from ..datatypes import ItemExterior, Item, ItemType
+from .datatypes import ItemExterior, Item, ItemType
 
 
 class Inventory:
