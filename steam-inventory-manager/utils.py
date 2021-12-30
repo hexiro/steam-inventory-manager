@@ -6,16 +6,16 @@ import secrets
 import struct
 import time
 from hashlib import sha1
-from typing import Optional, List
 
 from .datatypes import ItemType
+
 
 # contains snippets from
 # https://github.com/Gobot1234/steam.py/blob/4af51e42c5357c90bfc476a098b900541ded1a3c/steam/guard.py
 
 
-def parse_priorities(priorities: Optional[List[str]]) -> List[ItemType]:
-    item_types: List[ItemType] = []
+def parse_priorities(priorities: list[str] | None) -> list[ItemType]:
+    item_types: list[ItemType] = []
     if not priorities:
         return item_types
     for priority in priorities:
@@ -65,7 +65,7 @@ def generate_device_id(user_id64: int) -> str:
     return f'android:{"-".join(partial_id)}'
 
 
-def generate_confirmation_code(identity_secret: str, tag: str, timestamp: Optional[int] = None) -> str:
+def generate_confirmation_code(identity_secret: str, tag: str, timestamp: int | None = None) -> str:
     """Generate a trade confirmation code."""
     timestamp: int = timestamp or int(time.time())
     buffer = struct.pack(">Q", timestamp) + tag.encode("ascii")

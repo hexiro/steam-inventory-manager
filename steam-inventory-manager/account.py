@@ -6,7 +6,7 @@ import json
 import logging
 from functools import cached_property
 from time import time
-from typing import Optional, Any, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 import requests
 import rsa
@@ -33,6 +33,7 @@ from .utils import (
 )
 
 if TYPE_CHECKING:
+    from typing import Any
     from .datatypes import ItemType, SessionData
 
 logger = logging.getLogger(__name__)
@@ -45,18 +46,18 @@ class Account:
         password: str,
         *,
         shared_secret: str,
-        identity_secret: Optional[str] = None,
-        priorities: Optional[list[ItemType]] = None,
+        identity_secret: str | None = None,
+        priorities: list[ItemType] | None = None,
     ):
         self._username: str = username
         self._password: str = password
         self._shared_secret: str = shared_secret
-        self._identity_secret: Optional[str] = identity_secret
+        self._identity_secret: str | None = identity_secret
         self._logged_in: bool = False
-        self._steam_id64: Optional[int] = None
+        self._steam_id64: int | None = None
         self._session = requests.Session()
         self._session.headers["User-Agent"] = "python steam-inventory-manager/v1.0.0"
-        self._session_id: Optional[str] = None
+        self._session_id: str | None = None
         self._public_key, self._timestamp = self._rsa_key()
         self._priorities: list[ItemType] = priorities or []
         self._confirmations: dict[int, TradeConfirmation] = {}
@@ -131,7 +132,7 @@ class Account:
         trade_link = soup.find("input", {"id": "trade_offer_access_url"}).attrs["value"]
         return trade_link.split("&token=")[-1]
 
-    def trade(self, partner: "Account", me: list = None, them: list = None) -> int:
+    def trade(self, partner: Account, me: list = None, them: list = None) -> int:
         """Sends a trade an returns the trade id"""
         payload = {
             "sessionid": self.session_id,
@@ -161,7 +162,7 @@ class Account:
         self._confirm_trade(trade_id, tradeoffer)
         return trade_id
 
-    def accept_trade(self, partner: "Account", trade_id: int):
+    def accept_trade(self, partner: Account, trade_id: int):
         payload = {
             "sessionid": self.session_id,
             "tradeofferid": trade_id,

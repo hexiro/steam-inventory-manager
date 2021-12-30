@@ -59,7 +59,7 @@ class SteamInventoryManager:
         logger.info("All accounts logged in!")
 
         if not self.inventory.items_to_trade:
-            logger.info("Found no items to trade.")
+            logger.critical("Found no items to trade.")
             return
 
         trade_offers: dict[Account, list[Item]] = defaultdict(list)

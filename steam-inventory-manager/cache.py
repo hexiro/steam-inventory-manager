@@ -4,7 +4,7 @@ import json
 import logging
 import pathlib
 import sys
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .datatypes import SessionData
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-def cache_file(account_name: str) -> Optional[pathlib.Path]:
+def cache_file(account_name: str) -> pathlib.Path | None:
     """
     Returns a parent directory path
     where persistent application data can be stored.
@@ -44,7 +44,7 @@ def cache_file(account_name: str) -> Optional[pathlib.Path]:
     return folder / (account_name + ".json")
 
 
-def session_data(account_name: str) -> Optional[SessionData]:
+def session_data(account_name: str) -> SessionData | None:
     file = cache_file(account_name)
     if not file or not file.exists():
         logger.debug("No cached data found.")

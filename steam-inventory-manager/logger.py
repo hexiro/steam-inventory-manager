@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 import sys
 from logging import DEBUG, INFO, WARNING, ERROR, CRITICAL
-from typing import Optional
+from typing import TYPE_CHECKING
 
 import colorama
 from colorama import Fore, Style
@@ -17,7 +17,7 @@ class ColoredFormatter(logging.Formatter):
         https://stackoverflow.com/a/56944256
     """
 
-    def __init__(self, fmt: Optional[str] = None, datefmt: Optional[str] = None) -> None:
+    def __init__(self, fmt: str | None = None, datefmt: str | None = None) -> None:
         super().__init__(fmt=fmt, datefmt=datefmt)
         self.FORMATS: dict[int, logging.Formatter] = {
             DEBUG: logging.Formatter(Fore.YELLOW + fmt),
