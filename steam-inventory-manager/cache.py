@@ -1,15 +1,25 @@
 from __future__ import annotations
 
+import base64
 import json
 import logging
 import pathlib
 import sys
+import uuid
 from typing import TYPE_CHECKING
+
+from cryptography.fernet import Fernet, InvalidToken
 
 if TYPE_CHECKING:
     from .datatypes import SessionData
 
 logger = logging.getLogger(__name__)
+
+# isn't perfect or trying to be perfect.
+# If it changes it'll just make a new session and overwrite the file.
+hardware_id = str(uuid.uuid1(uuid.getnode(), 0))[24:]
+thirty_two = (hardware_id * 3)[:-4]
+fernet = Fernet(base64.b64encode(thirty_two.encode()))
 
 
 def cache_file(account_name: str) -> pathlib.Path | None:
@@ -35,13 +45,9 @@ def cache_file(account_name: str) -> pathlib.Path | None:
     else:
         return
 
-    folder = appdata_equivalent / "steam-inventory-manager"
-    try:
-        folder.mkdir(exist_ok=True)
-    except OSError:
-        return
-
-    return folder / (account_name + ".json")
+    directory = appdata_equivalent / "steam-inventory-manager"
+    directory.mkdir(exist_ok=True)
+    return directory / account_name
 
 
 def session_data(account_name: str) -> SessionData | None:
@@ -50,12 +56,16 @@ def session_data(account_name: str) -> SessionData | None:
         logger.debug("No cached data found.")
         return
     try:
-        with open(file, "r", encoding="utf-8", errors="ignore") as file:
-            data = json.load(file)
+        with open(file, "rb") as file:
+            encrypted = file.read()
+
+        decrypted = fernet.decrypt(encrypted).decode()
+        deserialized = json.loads(decrypted)
+
         logger.debug("Reading cache file:")
-        logger.debug(f"{data=}")
-        return data
-    except (json.JSONDecodeError, FileNotFoundError):
+        logger.debug(f"{deserialized=}")
+        return deserialized
+    except (json.JSONDecodeError, FileNotFoundError, InvalidToken):
         logger.debug("Failed to read from cache file.")
         return
 
@@ -67,5 +77,8 @@ def store_session_data(account_name: str, data: SessionData) -> None:
     logger.debug("Writing to cache file:")
     logger.debug(f"{data=}")
     logger.debug(f"{file=}")
-    with open(file, "w", encoding="utf-8", errors="ignore") as file:
-        json.dump(data, file)
+
+    with open(file, "wb") as file:
+        serialized = json.dumps(data)
+        encrypted = fernet.encrypt(serialized.encode())
+        file.write(encrypted)
