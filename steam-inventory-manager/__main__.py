@@ -82,7 +82,7 @@ class SteamInventoryManager:
                 me=[item.trade_asset for item in items],
             )
             logger.info(f"Opening trade offer with: {acc.username}")
-            logger.info(f"Items being traded: {', '.join(i.market_name for i in self.inventory.items_to_trade)}")
+            logger.info(f"Items being traded: {', '.join(i.market_name for i in items)}")
             if self.auto_accept_trades:
                 acc.accept_trade(
                     partner=self.main_account,
