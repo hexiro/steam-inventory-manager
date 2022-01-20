@@ -3,7 +3,6 @@ from __future__ import annotations
 import logging
 import sys
 from logging import DEBUG, INFO, WARNING, ERROR, CRITICAL
-from typing import TYPE_CHECKING
 
 import colorama
 from colorama import Fore, Style

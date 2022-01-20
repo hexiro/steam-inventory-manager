@@ -19,6 +19,7 @@ ConfigurationOptions = TypedDict(
     "ConfigurationOptions",
     {
         "min-price": float,
+        "auto-accept-trades": bool,
         "always-trade-graffities": bool,
         "always-trade-stickers": bool,
         "always-trade-agents": bool,

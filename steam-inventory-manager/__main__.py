@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import logging
+import sys
 from collections import defaultdict
 from typing import TYPE_CHECKING
 
 from .account import Account
-from .config import main_account, alternate_accounts
+from .config import main_account, alternate_accounts, options
 from .inventory import Inventory
 from .logger import setup
 from .utils import parse_priorities
@@ -19,11 +20,18 @@ logger = logging.getLogger(__name__)
 
 class SteamInventoryManager:
     def __init__(self):
+        self.auto_accept_trades = options["auto-accept-trades"]
+        identity_secret = main_account.get("identity-secret")
+
+        if not identity_secret and self.auto_accept_trades:
+            logger.critical("auto-accept-trades is enabled but no identity secret was provided.")
+            sys.exit(1)
+
         self.main_account: Account = Account(
             username=main_account["username"],
             password=main_account["password"],
             shared_secret=main_account["shared-secret"],
-            identity_secret=main_account["identity-secret"],
+            identity_secret=identity_secret,
         )
         self.main_account.login()
 
@@ -75,10 +83,11 @@ class SteamInventoryManager:
             )
             logger.info(f"Opening trade offer with: {acc.username}")
             logger.info(f"Items being traded: {', '.join(i.market_name for i in self.inventory.items_to_trade)}")
-            acc.accept_trade(
-                partner=self.main_account,
-                trade_id=trade_id,
-            )
+            if self.auto_accept_trades:
+                acc.accept_trade(
+                    partner=self.main_account,
+                    trade_id=trade_id,
+                )
         len_offers = len(trade_offers)
         len_items = len(self.inventory.items_to_trade)
         offers_noun = "offers" if len_offers > 1 else "offer"

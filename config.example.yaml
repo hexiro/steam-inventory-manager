@@ -5,25 +5,34 @@
 main-account:
   username: "MyMainSteamAccount"
   password: "password"
-  # used to login w/ 2fa (required to trade)
+  # used to log in w/ 2fa (required to trade)
   shared-secret: "Y7vCfOb5GYOWmf8FljXiUgQnFik="
-  # used to confirm trades
-  identity-secret: "Y7vCfOb5GYOWmf8FljXiUgQnFik="
+  # used to confirm trades (only needed if auto-accept-trades is true)
+  identity-secret: "sLyS2HBwxFVIAU1CTRC7w+3kYz4=="
   # they look very similar so watch out!
 # alternate steam accounts
-# items will be primarily traded to here
 alternate-accounts:
   - username: "MyAlternateSteamAccount"
     password: "password"
     # identity secret not needed
     shared-secret: "Y7vCfOb5GYOWmf8FljXiUgQnFik="
+    # not needed on primary account
+    # items will be primarily traded to here
+    priorities: []
+  - username: "MySecondAlternateSteamAccount"
+    password: "password"
+    # identity secret not needed
+    shared-secret: "Y7vCfOb5GYOWmf8FljXiUgQnFik="
     # prioritizes giving a certain type of items to this account.
-    # all current options listed. Useful for organizing multiple accounts with different items.
+    # all current options listed: Useful for organizing multiple accounts with different items.
+    # ["Knife", "Gloves", "Pistol", "Rifle", "Sniper Rifle", "Shotgun", "SMG", "Machinegun", "Graffiti", "Sticker", "Agent", "Container", "Collectible", "Patch"]
     # (ex. one account for cases (containers) and another for graffities)
-    priorities: ["Knife", "Gloves", "Pistol", "Rifle", "Sniper Rifle", "Shotgun", "SMG", "Machinegun", "Graffiti", "Sticker", "Agent", "Container", "Collectible", "Patch"]
+    priorities: ["Container", "Sticker"]
 options:
   # minimum price of a skin for it to stay in your inventory
   min-price: 1.00
+  # automatically accepts trades. disable if you want to manually review beforehand.
+  auto-accept-trades: true
   # always trades certain types regardless of price
   # (not normally needed unless you want to trade certain items without setting a min price)
   always-trade-graffities: true
