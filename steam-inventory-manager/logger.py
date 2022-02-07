@@ -20,7 +20,7 @@ class ColoredFormatter(logging.Formatter):
         super().__init__(fmt=fmt, datefmt=datefmt)
         self.FORMATS: dict[int, logging.Formatter] = {
             DEBUG: logging.Formatter(Fore.YELLOW + fmt),
-            INFO: logging.Formatter(Fore.LIGHTWHITE_EX + fmt),
+            INFO: logging.Formatter(fmt),
             WARNING: logging.Formatter(Fore.LIGHTYELLOW_EX + fmt),
             ERROR: logging.Formatter(Fore.RED + fmt),
             CRITICAL: logging.Formatter(Fore.RED + Style.BRIGHT + fmt),

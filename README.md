@@ -5,7 +5,7 @@ Trades your junk steam items to alternate account(s).<br/>
 Currently, only CS:GO is supported because of 3rd party pricing data.<br/>
 If you ever want to see more popular games supported, please refer me to where I can get accurate pricing information.
 
-***(NOTE: this requires a shared_secret for each account and an identity secret for the main account)***
+***(NOTE: this requires a shared_secret for each account and an identity_secret for the main account)***
 
 ## Installation & Setup
 
